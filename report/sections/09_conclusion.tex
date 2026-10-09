@@ -28,5 +28,6 @@ $\beta<1$; the step size must be small in terms of the effective step $\gamma$, 
 threshold that depends on the function class (\cref{fig:regions}); a constant step only
 reaches a noise floor of order $\gamma\sigma^2$, which is unavoidable and the same as for SGD
 (\cref{prop:noise-floor}); and stability or optimality on quadratics does not imply
-convergence on general functions (\cref{ex:lrp}). In the worst case, momentum neither
-accelerates nor slows down SGD once the step sizes are compared on the right scale.
+convergence on general functions (\cref{ex:lrp}). Once step sizes are compared on the
+right scale, our upper bounds for SGDM match those for SGD in the dominant noise term, up to
+constants, and they show no acceleration.

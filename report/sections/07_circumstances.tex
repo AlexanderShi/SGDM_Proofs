@@ -95,8 +95,11 @@ every initial pair $(x_{-1},x_0)$ if and only if
 \begin{equation}\label{eq:stability}
   \alpha h<2(1+\beta).
 \end{equation}
-In that case the convergence is linear with rate $\max\{|\lambda_1|,|\lambda_2|\}<1$,
-where $\lambda_{1,2}$ are the roots of $p(\lambda)=\lambda^2-(1+\beta-\alpha h)\lambda+\beta$.
+In that case the convergence is linear. More precisely, let $\lambda_{1,2}$ be the roots of
+$p(\lambda)=\lambda^2-(1+\beta-\alpha h)\lambda+\beta$; then for every $\rho$ with
+$\max\{|\lambda_1|,|\lambda_2|\}<\rho<1$ there is a constant $C$ (depending on $\rho$ and the
+initial values) such that $|x_k|\le C\rho^k$, and if $\lambda_1\ne\lambda_2$ one may take
+$\rho=\max\{|\lambda_1|,|\lambda_2|\}$.
 For $f(x)=\frac12x^\top Hx$ with $H$ symmetric positive definite with largest eigenvalue
 $L$, the iteration converges for all initial conditions if and only if $\alpha L<2(1+\beta)$.
 \end{proposition}
@@ -308,8 +311,8 @@ The results above give a nuanced answer.
 \item \emph{No worst-case acceleration.} In our analysis the admissible effective step shrinks
   as $\beta\to1$ (R1), and the PL rate $1-\frac{\gamma\mu}{4}$ is no better than that of SGD.
   Acceleration (\cref{sec:circumstances}, ``Momentum on quadratics'') relies on quadratic
-  structure and exact gradients; it fails for general strongly convex functions
-  (\cref{ex:lrp}) and, for stochastic gradients, there are problems on which the stochastic
+  structure and exact gradients; the quadratic-optimal tuning can fail on a smooth strongly
+  convex function (\cref{ex:lrp}) and, for stochastic gradients, there are problems on which the stochastic
   heavy-ball method provably does not improve on SGD~\cite{kidambi2018}.
 \end{itemize}
 The practical popularity of momentum is therefore better explained by its behaviour on
@@ -321,12 +324,15 @@ is small relative to the signal, than by worst-case guarantees.
 \begin{itemize}
 \item \emph{$\beta\ge1$ (no friction).} The roots of $p$ in \cref{prop:quadratic-stability}
   have product $\beta\ge1$, so at least one has modulus $\ge1$: heavy ball does not converge
-  even on $\frac12x^2$. The extrapolated point and the effective step size are undefined.
+  even on $\frac12x^2$. At $\beta=1$ the extrapolated point and the effective step size
+  are not even defined.
   The condition $\beta<1$ is necessary.
 \item \emph{Noise growing with the gradient},
   $\Ek\norm{g_k-\nabla f(x_k)}^2\le\sigma^2+M\norm{\nabla f(x_k)}^2$: all results remain
-  valid with the step-size condition tightened by the factor $1+M$
-  (\cref{rem:extensions}(ii)).
+  valid with the step-size condition tightened by the factor $1+M$. For the results based
+  on \cref{thm:master} see \cref{rem:extensions}(ii); in the convex \cref{thm:convex}, the
+  bound $\Ek\norm{g_k}^2\le2L(1+M)(f(x_k)-\fs)+\sigma^2$ replaces $2\gamma(1-L\gamma)$ by
+  $2\gamma(1-L\gamma(1+M))$, so $L\gamma(1+M)\le\frac12$ suffices.
 \item \emph{Infinite variance (heavy-tailed noise).} \Cref{as:variance} fails and the bounds
   above are vacuous; techniques such as gradient clipping are then used. This is beyond the
   scope of this report.

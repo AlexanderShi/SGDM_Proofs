@@ -36,7 +36,7 @@ uniformly from $\{0,\dots,K-1\}$, independently of everything else; then
 $\E\norm{\nabla f(x_R)}^2$ equals the left-hand side of \eqref{eq:nonconvex}~\cite{ghadimilan2013}.
 
 \begin{corollary}[Step size and iteration complexity]\label{cor:rate}
-Under the assumptions of \cref{thm:nonconvex}, fix $K\ge1$ and choose
+Under the assumptions of \cref{thm:nonconvex}, assume $\Dlt>0$, fix $K\ge1$ and choose
 \[
   \gamma=\min\Bigl\{\frac{1-\beta}{2L},\;\frac1\sigma\sqrt{\frac{\Dlt}{LK}}\Bigr\}
   \quad\Bigl(\gamma=\tfrac{1-\beta}{2L}\text{ if }\sigma=0\Bigr),
@@ -66,8 +66,8 @@ Adding gives \eqref{eq:rate}. For the complexity statement, each of the two term
 \paragraph{Comparison with SGD.} For SGD the analogous choice gives
 $\frac{2L\Dlt}{K}+2\sigma\sqrt{\frac{2L\Dlt}{K}}$ (\cref{sec:sgd}). The dominant term for
 large $K$ (or small $\eps$), of order $\sigma\sqrt{L\Dlt/K}$, is the same for SGD and SGDM
-up to a constant: \emph{in the worst case momentum neither improves nor degrades the
-asymptotic rate.} Momentum costs a factor $1/(1-\beta)$ in the noise-free term, which
+up to a constant: \emph{our upper bound for SGDM matches the one for SGD in the dominant
+term, and it shows no acceleration.} Momentum costs a factor $1/(1-\beta)$ in the noise-free term, which
 reflects the more conservative step-size condition.
 
 \begin{corollary}[Exact gradients]\label{cor:deterministic}
@@ -144,22 +144,23 @@ Insert both into (a).
 
 Step sizes such as $\gamma_k=\gamma_0/(k+1)^{0.6}$ satisfy the Robbins--Monro
 conditions~\cite{robbins1951}. Stronger almost-sure statements (a limit rather than a
-$\liminf$) are known for SGD~\cite{bertsekas2000} and for the stochastic heavy-ball
-method~\cite{gadat2018,sebbouh2021}; they require more advanced martingale tools such as
+$\liminf$) are known for SGD~\cite{bertsekas2000}, and for the stochastic heavy-ball
+method in the convex case~\cite{sebbouh2021} or under additional assumptions and a
+different parametrization of the momentum~\cite{gadat2018}; they require more advanced martingale tools such as
 the Robbins--Siegmund theorem~\cite{robbinssiegmund1971}.
 
 \subsection{Functions satisfying the PL inequality}
 
 \begin{lemma}\label{lem:phi-pl}
-Under \cref{as:smooth,as:lower} and the PL inequality \eqref{eq:pl}, the SGDM iterates satisfy
+Under \cref{as:smooth,as:lower} and the PL inequality \eqref{eq:pl} with $\mu\le L$, the
+SGDM iterates satisfy
 \[
   \Phi_k\le\frac1\mu\norm{\nabla f(x_k)}^2+3\cb\norm{x_k-x_{k-1}}^2\qquad\text{for all }k\ge0.
 \]
 \end{lemma}
 
 \begin{proof}
-If $\nabla f\equiv0$ then $f$ is constant, $\Phi_k=\cb\norm{v_k}^2$, and there is nothing to
-prove; otherwise $\mu\le L$ by \cref{lem:pl-facts}(b). Write
+Write
 $f(z_k)-\fs=\bigl(f(z_k)-f(x_k)\bigr)+\bigl(f(x_k)-\fs\bigr)$. By the descent lemma and Young's
 inequality with $\rho=1/L$,
 $f(z_k)-f(x_k)\le\ip{\nabla f(x_k)}{z_k-x_k}+\frac L2\norm{z_k-x_k}^2
@@ -172,7 +173,7 @@ $f(z_k)-\fs\le\frac1\mu\norm{\nabla f(x_k)}^2+2\cb\norm{v_k}^2$. Add $\cb\norm{v
 \begin{tcolorbox}[keybox]
 \begin{theorem}[SGDM under the PL inequality]\label{thm:pl}
 Let \cref{as:smooth,as:lower,as:unbiased,as:variance} and the PL inequality \eqref{eq:pl}
-hold, $\beta\in[0,1)$ and $0<\alpha\le\frac{(1-\beta)^2}{2L}$. Then for all $k\ge0$,
+with $\mu\le L$ hold, $\beta\in[0,1)$ and $0<\alpha\le\frac{(1-\beta)^2}{2L}$. Then for all $k\ge0$,
 \[
   \E\Phi_k\le\Bigl(1-\frac{\gamma\mu}{4}\Bigr)^k\Dlt+\frac{4L\gamma\sigma^2}{\mu},
   \qquad
@@ -226,7 +227,7 @@ Since $\gamma_k\le\gamma_0=\frac{8}{\mu a}\le\frac{1-\beta}{2L}$, the one-step c
   e_{k+1}\le\Bigl(1-\frac{2}{k+a}\Bigr)e_k+\frac{64L\sigma^2}{\mu^2(k+a)^2}.
 \]
 We show $e_k\le\nu/(k+a)$ by induction. For $k=0$, $e_0=\Dlt\le\nu/a$. If
-$e_k\le\nu/(k+a)$, then, because $1-\frac2{k+a}\ge0$ (note $a\ge16$) and
+$e_k\le\nu/(k+a)$, then, because $1-\frac2{k+a}\ge0$ (note $a\ge16$ because $\mu\le L$) and
 $\frac{64L\sigma^2}{\mu^2}\le\nu$,
 \[
   e_{k+1}\le\frac{(k+a-2)\,\nu}{(k+a)^2}+\frac{\nu}{(k+a)^2}=\frac{(k+a-1)\,\nu}{(k+a)^2}\le\frac{\nu}{k+a+1},
@@ -258,7 +259,8 @@ $L\gamma\le\frac12$. Define
     \E f(\bar x_K)-\fs\le\frac1K\sum_{k=0}^{K-1}\bigl(\E f(x_k)-\fs\bigr)
     \le\frac{\norm{x_0-x^\star}^2}{\gamma K}+\frac{2\beta\Dlt}{(1-\beta)K}+\gamma\sigma^2 .
   \]
-\item With $D:=\norm{x_0-x^\star}$ and $\gamma=\min\{\frac1{2L},\frac{D}{\sigma\sqrt K}\}$:
+\item With $D:=\norm{x_0-x^\star}>0$ and $\gamma=\min\{\frac1{2L},\frac{D}{\sigma\sqrt K}\}$
+  ($\gamma=\frac1{2L}$ if $\sigma=0$):
   $\E f(\bar x_K)-\fs\le\frac{2LD^2}{K}+\frac{2\beta\Dlt}{(1-\beta)K}+\frac{2\sigma D}{\sqrt K}$.
 \end{enumerate}
 \end{theorem}

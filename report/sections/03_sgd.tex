@@ -78,7 +78,8 @@ computation as in \cref{cor:rate} below.)
 \subsection{Functions satisfying the PL inequality}
 
 \begin{theorem}[SGD, PL]\label{thm:sgd-pl}
-Under \cref{as:smooth,as:lower,as:unbiased,as:variance}, the PL inequality \eqref{eq:pl},
+Under \cref{as:smooth,as:lower,as:unbiased,as:variance}, the PL inequality \eqref{eq:pl}
+with $\mu\le L$,
 and $0<\alpha\le1/L$, for every $k\ge0$,
 \[
   \E f(x_k)-\fs\le(1-\alpha\mu)^k\Dlt+\frac{L\alpha\sigma^2}{2\mu}.
@@ -89,7 +90,7 @@ and $0<\alpha\le1/L$, for every $k\ge0$,
 Subtract $\fs$ from \cref{lem:sgd-step} and use \eqref{eq:pl}:
 $\Ek[f(x_{k+1})]-\fs\le(1-\alpha\mu)(f(x_k)-\fs)+\frac{L\alpha^2}{2}\sigma^2$. With
 $e_k:=\E f(x_k)-\fs$ and the tower property, $e_{k+1}\le(1-\alpha\mu)e_k+\frac{L\alpha^2}2\sigma^2$.
-Note $0\le1-\alpha\mu<1$, because $\alpha\mu\le\mu/L\le1$ (\cref{lem:pl-facts}(b)).
+Note $0\le1-\alpha\mu<1$, because $\alpha\mu\le\mu/L\le1$.
 Unrolling the recursion and using the geometric series (\cref{lem:elementary}(f)),
 \[
   e_k\le(1-\alpha\mu)^ke_0+\frac{L\alpha^2\sigma^2}{2}\sum_{j=0}^{k-1}(1-\alpha\mu)^j

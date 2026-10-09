@@ -25,8 +25,8 @@ Under \cref{as:smooth,as:unbiased,as:variance}, for every $k\ge0$,
   f(z_{k+1})\le f(z_k)-\gamma\ip{\nabla f(z_k)}{g_k}+\frac{L\gamma^2}{2}\norm{g_k}^2 .
 \]
 \emph{Conditional expectation.} The point $z_k$ is known at time $k$ (it is computed from
-$x_k$ and $x_{k-1}$), hence so is $\nabla f(z_k)$. By \ref{R:mono}, \ref{R:known} and
-\cref{as:unbiased}, $\Ek\ip{\nabla f(z_k)}{g_k}=\ip{\nabla f(z_k)}{\nabla f(x_k)}$, and by
+$x_k$ and $x_{k-1}$), hence so is $\nabla f(z_k)$. We take $\Ek$ of both sides \ref{R:mono}. By \ref{R:lin},
+\ref{R:known} and \cref{as:unbiased}, $\Ek\ip{\nabla f(z_k)}{g_k}=\ip{\nabla f(z_k)}{\nabla f(x_k)}$, and by
 \cref{lem:variance}, $\Ek\norm{g_k}^2\le\norm{\nabla f(x_k)}^2+\sigma^2$. Therefore
 \[
   \Ek[f(z_{k+1})]\le f(z_k)-\gamma\ip{\nabla f(z_k)}{\nabla f(x_k)}
@@ -44,9 +44,11 @@ where we also dropped $-\frac12\norm{\nabla f(z_k)}^2\le0$. Multiply by $\gamma$
 insert into the previous display.
 \end{proof}
 
-Compared with SGD (\cref{lem:sgd-step}), the only new term is
+Compared with SGD (\cref{lem:sgd-step}), the essential new term is
 $\frac{L^2\gamma}{2}\norm{z_k-x_k}^2$, the price of evaluating the gradient at $x_k$
-instead of $z_k$. By \eqref{eq:z-minus-x} it equals
+instead of $z_k$. (The progress coefficient is also somewhat smaller,
+$\frac\gamma2(1-L\gamma)$ instead of $\gamma(1-\frac{L\gamma}2)$, because we discarded
+$-\frac\gamma2\norm{\nabla f(z_k)}^2$.) By \eqref{eq:z-minus-x} it equals
 $\frac{L^2\gamma}{2}\bigl(\frac{\beta}{1-\beta}\bigr)^2\norm{v_k}^2$: it is
 \emph{quadratic} in the velocity, hence of higher order in the step size than the
 troublesome inertia term $\beta\ip{\nabla f(x_k)}{v_k}$ of \eqref{eq:naive}, which was
@@ -180,7 +182,7 @@ value at $k=0$ & $\Dlt$ & $\Dlt$\\
 The potential contains a kinetic energy $\cb\norm{v_k}^2$. In each step friction removes
 the fraction $1-\beta$ of it (\cref{lem:velocity} keeps only $\beta\norm{v_k}^2$), which
 releases $\cb(1-\beta)\norm{v_k}^2$. Evaluating the gradient at the wrong point costs
-$L\gamma\,\cb\norm{v_k}^2$ (\cref{lem:z-descent}). The budget balances exactly when
+$L\gamma\,\cb\norm{v_k}^2$ (\cref{lem:z-descent}). The budget is in surplus exactly when
 \[
   L\gamma<1-\beta\qquad\Longleftrightarrow\qquad\alpha<\frac{(1-\beta)^2}{L}:
 \]
@@ -188,7 +190,8 @@ $L\gamma\,\cb\norm{v_k}^2$ (\cref{lem:z-descent}). The budget balances exactly w
 error.} This is visible in \eqref{eq:master-general}: if $L\gamma<1-\beta$, both the
 velocity coefficient and the gradient coefficient are positive (for the latter note that
 $\frac{L\gamma(1-\beta+\beta^2)}{1-\beta}<1-\beta+\beta^2\le1$), so without noise
-$\Phi_k$ strictly decreases until $x_k$ is stationary with zero velocity. Condition (b)
+(for $\beta>0$) $\Phi_k$ strictly decreases at every step unless $\nabla f(x_k)=0$ and
+$v_k=0$. Condition (b)
 keeps half of the friction as a safety margin, which produces the clean constants. As
 $\beta\to1$ the friction vanishes, and so does the admissible step.
 \end{tcolorbox}
@@ -205,9 +208,10 @@ report are chosen for simplicity and are not optimized.
 \begin{remark}[Why both parts of the potential are needed]
 Without the kinetic term, \eqref{eq:pf-master-1} leaves a positive term
 $L\gamma\cb\norm{v_k}^2$ that $f(z_k)$ cannot absorb; adding $\cb\norm{v_k}^2$ and
-\cref{lem:velocity} turns it into a decrease. Conversely, a potential built on $f(x_k)$
-instead of $f(z_k)$ must absorb the first-order inertia term of \eqref{eq:naive}; this works
-without noise (\cref{prop:energy}) but not with noise (\cref{rem:energy-noise}).
+\cref{lem:velocity} turns it into a decrease. Conversely, the mechanical energy
+$V_k=f(x_k)+\frac{\beta}{2\alpha}\norm{x_k-x_{k-1}}^2$ of \cref{prop:energy}, which is built on
+$f(x_k)$, absorbs the first-order inertia term of \eqref{eq:naive} without noise; with noise,
+however, it picks up a noise term of first order in $\alpha$ (\cref{rem:energy-noise}).
 \end{remark}
 
 \begin{corollary}[When does one step decrease the potential?]\label{cor:when-decrease}
@@ -226,9 +230,9 @@ Immediate from \eqref{eq:master} (and from \cref{lem:sgd-step} for SGD).
 \end{proof}
 
 So the circumstances under which SGDM makes progress \emph{in a single step} are the same
-as for SGD: the signal $\norm{\nabla f(x_k)}^2$ must exceed the noise level, here
-$4L\gamma\sigma^2$; outside this ``noise region'' the potential decreases in expectation,
-inside it the noise can push it up. Shrinking $\gamma$ shrinks the noise region.
+as for SGD: it suffices that the signal $\norm{\nabla f(x_k)}^2$ exceeds the noise level,
+here $4L\gamma\sigma^2$; outside this ``noise region'' the potential decreases in
+expectation, inside it the noise may push it up. Shrinking $\gamma$ shrinks the noise region.
 
 The potential also controls the function value at the actual iterate:
 

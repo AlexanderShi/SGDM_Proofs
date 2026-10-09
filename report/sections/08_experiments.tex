@@ -86,14 +86,14 @@ different $\beta$ coincide.
 from the same $\gamma_0=\frac{1-\beta}{2L}$). (a)~Nonconvex logistic regression (P3), $50$ runs:
 constant step versus $\gamma_k=\gamma_0/\sqrt{k+1}$ (\cref{thm:diminishing}(c)). (b)~Nonconvex
 PL function (P2), $100$ runs: constant step versus $\gamma_k=\frac8{\mu(k+a)}$ with
-$a=\frac{16L}{\mu(1-\beta)}$ (\cref{cor:pl-decay}); the dotted lines have slopes $-\frac12$ and
-$-1$.}
+$a=\frac{16L}{\mu(1-\beta)}$ (\cref{cor:pl-decay}); the dotted reference lines have slope $-\frac12$
+in (a) and $-1$ in (b).}
 \label{fig:diminishing}
 \end{figure}
 
 \paragraph{Diminishing steps (\cref{fig:diminishing}).} With a constant step the error
 stalls at its noise floor; with the schedules of \cref{thm:diminishing,cor:pl-decay} it keeps
-decreasing. On the logistic problem the gradient norm decreases roughly like $k^{-1/2}$,
+decreasing. On the logistic problem the squared gradient norm decreases roughly like $k^{-1/2}$,
 which is the order of $\gamma_k$; on the PL function the optimality gap eventually decreases
 like $1/k$, as predicted by \cref{cor:pl-decay}. (The theoretical schedule for the PL function
 starts slowly because the certified PL constant $\mu=\frac1{32}$ is much smaller than the

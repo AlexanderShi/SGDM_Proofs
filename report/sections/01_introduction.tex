@@ -21,7 +21,7 @@ example (or on a random mini-batch).
   x_{k+1}=x_k-\alpha\, g_k,\qquad g_k:=g(x_k;\xi_k),\qquad k=0,1,2,\dots
 \end{equation}
 where $\alpha>0$ is the \emph{step size} (learning rate) and $\xi_0,\xi_1,\dots$ are
-independent samples.
+independent, identically distributed samples.
 
 \paragraph{SGDM.} SGD with momentum---also called the \emph{stochastic heavy-ball
 method}, after Polyak's heavy-ball method~\cite{polyak1964}---adds a fraction
@@ -47,11 +47,13 @@ typical statement has the form
 \]
 and the speed at which the right-hand side decreases in the number of iterations $K$ is
 the \emph{rate}. For special classes of functions (Polyak--{\L}ojasiewicz or convex) we
-will also bound the optimality gap $\E[f(x_k)]-\fs$, where $\fs=\inf f$.
+will also bound the optimality gap $\E[f(x_k)]-\fs$, where $\fs=\inf f$ (for convex
+functions, at the averaged iterate).
 
 \subsection{The difficulty, and the idea in one line}
 
-For SGD, every textbook proof~\cite{bottou2018,ghadimilan2013} rests on one inequality,
+For SGD on smooth, possibly nonconvex functions, the textbook
+proof~\cite{bottou2018,ghadimilan2013} rests on one inequality,
 the \emph{expected decrease}:
 \begin{equation}\label{eq:intro-sgd-decrease}
   \E\bigl[f(x_{k+1})\,\big|\,\text{history}\bigr]\;\le\;f(x_k)
@@ -66,15 +68,17 @@ summing \eqref{eq:intro-sgd-decrease} over $k$.
 
 For SGDM, inequality \eqref{eq:intro-sgd-decrease} is \emph{false}, even without noise:
 momentum can carry the iterate uphill (in \cref{ex:overshoot} the method sits exactly at
-the minimizer and is pushed away by its own inertia). It holds only at steps where the
-momentum still points downhill (\cref{prop:f-step}), and the algorithm cannot control
-when that is the case. The function value is the wrong yardstick. The idea of this report is to measure progress with a \emph{potential}
+the minimizer and is pushed away by its own inertia). It can be guaranteed at a given
+step when $\alpha\le\frac1{2L}$ and the momentum points sufficiently downhill,
+$\ip{\nabla f(x_k)}{x_k-x_{k-1}}\le-L\beta\norm{x_k-x_{k-1}}^2$ (\cref{prop:f-step}); after
+an overshoot no such guarantee is available, and the algorithm cannot control when
+overshoots happen. The function value is the wrong yardstick. The idea of this report is to measure progress with a \emph{potential}
 \[
   \Phi_k=f(z_k)-\fs+\frac{L\beta^2}{2(1-\beta)^2}\norm{x_k-x_{k-1}}^2,
   \qquad z_k=x_k+\frac{\beta}{1-\beta}\,(x_k-x_{k-1}),
 \]
-where $z_k$ is an extrapolated point---the place where the ball would come to rest if all
-forces were switched off (\cref{sec:extrapolated})---and the second term is a kinetic
+where $z_k$ is an extrapolated point---the place where the ball would come to rest if the
+gradient force were switched off and only friction acted (\cref{sec:extrapolated})---and the second term is a kinetic
 energy. We prove (\cref{thm:master}) that $\Phi_k$ obeys the exact analogue of
 \eqref{eq:intro-sgd-decrease}:
 \begin{tcolorbox}[keybox]
@@ -92,7 +96,9 @@ $\gamma=\alpha/(1-\beta)$ playing the role of $\alpha$.
 \subsection{Summary of results}
 
 \Cref{tab:summary} lists what we prove. Throughout, $\Dlt:=f(x_0)-\fs$, $\gamma=\alpha/(1-\beta)$,
-and ``nonconvex'' means only that $f$ is $L$-smooth and bounded below.
+and ``nonconvex'' means only that $f$ is $L$-smooth and bounded below. In the table,
+$\mu$ is the constant of the Polyak--{\L}ojasiewicz (PL) inequality (\cref{def:pl}),
+$x^\star$ is a minimizer, and $\bar x_K=\frac1K\sum_{k<K}x_k$.
 
 \begin{table}[ht]
 \centering\small
@@ -119,7 +125,7 @@ No noise, smooth & $\alpha<\frac{2(1-\beta)}{L}$ &
 PL inequality & $\alpha\le\frac{(1-\beta)^2}{2L}$ &
   $\E f(x_k)-\fs\le2\bigl(1-\frac{\gamma\mu}{4}\bigr)^k\Dlt+\frac{8L\gamma\sigma^2}{\mu}$ &
   \cref{thm:pl}\\
-PL, decaying & $\gamma_k=\frac{8}{\mu(k+a)}$ &
+PL, decaying & $\gamma_k=\frac{8}{\mu(k+a)}$, $a\ge\frac{16L}{\mu(1-\beta)}$ &
   $\E f(x_k)-\fs=O(1/k)$ &
   \cref{cor:pl-decay}\\
 Convex & $\alpha\le\frac{1-\beta}{2L}$ &

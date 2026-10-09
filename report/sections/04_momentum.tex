@@ -139,7 +139,7 @@ $1-L\alpha\ge\frac12$ when $\alpha\le\frac1{2L}$.
 \end{proof}
 
 So the function value decreases in expectation just as for SGD as long as the momentum
-still points downhill; after an overshoot, when $\ip{\nabla f(x_k)}{v_k}>0$, no decrease can
+points sufficiently downhill in the sense of \eqref{eq:downhill}; after an overshoot, when $\ip{\nabla f(x_k)}{v_k}>0$, no decrease can
 be guaranteed. The algorithm has no control over the sign of this inner product, so a
 guarantee that holds at \emph{every} step needs a different quantity to measure progress.
 

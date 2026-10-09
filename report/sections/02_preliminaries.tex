@@ -10,8 +10,8 @@ the main arguments can be checked line by line.
 Vectors live in $\R^d$. For $a,b\in\R^d$, $\ip{a}{b}=\sum_{i=1}^d a_ib_i$ is the inner
 product and $\norm{a}=\sqrt{\ip{a}{a}}$ the Euclidean norm. For $f:\R^d\to\R$ we write
 $\fs:=\inf_{x\in\R^d}f(x)$ (possibly not attained). Sums $\sum_{k<K}$ run over
-$k=0,1,\dots,K-1$. For SGDM we will use the following names, all defined precisely in
-\cref{sec:momentum}:
+$k=0,1,\dots,K-1$. For SGDM we will use the following names; each is defined precisely where it first
+appears in the text:
 \begin{center}\small
 \begin{tabular}{@{}ll@{}}
 \toprule
@@ -155,10 +155,16 @@ nonconvex. The PL constant is computed in~\cite{karimi2016}; for a sum of functi
 separate coordinates, \eqref{eq:pl} holds coordinate-wise and therefore for the sum.
 \end{proof}
 
+\paragraph{Convention.} Whenever we assume the PL inequality, we also assume $\mu\le L$.
+This is no restriction: if $\nabla f\not\equiv0$ it holds automatically by (b), and in
+general the PL inequality with constant $\mu$ implies the PL inequality with every smaller
+constant, in particular with $\min\{\mu,L\}$.
+
 \subsection{Randomness and conditional expectation}\label{sec:conditional}
 
 \paragraph{The probabilistic model.} The samples $\xi_0,\xi_1,\xi_2,\dots$ are independent
-random variables, and the starting point $x_0$ is deterministic. The stochastic gradient
+and identically distributed (i.i.d.), each distributed like a generic sample $\xi$, and the
+starting point $x_0$ is deterministic. The stochastic gradient
 oracle $g(x;\xi)$ satisfies, for every \emph{fixed} $x\in\R^d$,
 \begin{equation}\label{eq:oracle}
   \E_\xi\bigl[g(x;\xi)\bigr]=\nabla f(x),\qquad
@@ -237,7 +243,8 @@ schemes for which \cref{as:unbiased,as:variance} hold. The case $\sigma=0$ is
 deterministic (exact gradients).
 
 \begin{remark}[All expectations are finite]\label{rem:integrability}
-Under \cref{as:smooth,as:variance}, every quantity whose expectation we take is integrable.
+Under \cref{as:smooth,as:lower,as:unbiased,as:variance}, every quantity whose expectation
+we take is integrable.
 Indeed, by induction on $k$ one has $\E\norm{x_k}^2<\infty$: if this holds up to $k$,
 then $\E\norm{g_k}^2=\E\bigl[\Ek\norm{g_k}^2\bigr]\le\E\norm{\nabla f(x_k)}^2+\sigma^2
 \le2\norm{\nabla f(0)}^2+2L^2\E\norm{x_k}^2+\sigma^2<\infty$ (\cref{lem:variance},
