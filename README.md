@@ -1,4 +1,4 @@
-# SGDM_Proof — Convergence of Stochastic Gradient Descent with Momentum
+# SGDM_Proofs — Convergence of Stochastic Gradient Descent with Momentum
 
 A self-contained, fully detailed proof that **stochastic gradient descent with momentum**
 (SGDM, also called the stochastic heavy-ball method) converges. The proof is written in the
