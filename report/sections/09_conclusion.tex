@@ -31,3 +31,9 @@ reaches a noise floor of order $\gamma\sigma^2$, which is unavoidable and the sa
 convergence on general functions (\cref{ex:lrp}). Once step sizes are compared on the
 right scale, our upper bounds for SGDM match those for SGD in the dominant noise term, up to
 constants, and they show no acceleration.
+
+The potential is a convenience, not a necessity: \cref{sec:lyapunov-free} reaches the same
+nonconvex rate by tracking only $f(x_k)$, at the price of the slightly stronger restriction
+$\beta\le1-4L\gamma$ on the momentum. There, momentum is an exponentially averaged gradient
+estimate whose bias is controlled by the slow motion of the iterates and whose averaged noise
+is almost orthogonal to the current gradient.

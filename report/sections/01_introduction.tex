@@ -113,6 +113,9 @@ Nonconvex & $\alpha\le\frac{(1-\beta)^2}{2L}$ &
 Nonconvex, tuned $\gamma$ & $\gamma=\min\bigl\{\frac{1-\beta}{2L},\frac1\sigma\sqrt{\frac{\Dlt}{LK}}\bigr\}$ &
   $\frac1K\sum_{k<K}\E\norm{\nabla f(x_k)}^2\le\frac{8L\Dlt}{(1-\beta)K}+8\sigma\sqrt{\frac{L\Dlt}{K}}$ &
   \cref{cor:rate}\\
+Nonconvex, no potential & $\alpha\le\frac{(1-\beta)^2}{4L}$ &
+  $\frac1K\sum_{k<K}\E\norm{\nabla f(x_k)}^2\le\frac{5\Dlt}{2\gamma K}+4L\gamma\sigma^2$ &
+  \cref{thm:lf}\\
 Nonconvex, decaying & $\gamma_k\le\frac{1-\beta}{2L}$, $\sum\gamma_k=\infty$, $\sum\gamma_k^2<\infty$ &
   $\liminf_k\norm{\nabla f(x_k)}=0$ almost surely &
   \cref{thm:diminishing}\\
@@ -159,7 +162,8 @@ of the report, proves the expected decrease inequality \eqref{eq:intro-master}.
 \Cref{sec:convergence} turns it into convergence theorems. \Cref{sec:circumstances}
 answers the question ``under what circumstances does SGDM converge?'', including exact
 computations that show which parts of the conditions cannot be removed.
-\Cref{sec:experiments} illustrates everything numerically; the code that produces every
+\Cref{sec:lyapunov-free} gives a second proof of the nonconvex rate without any Lyapunov
+function. \Cref{sec:experiments} illustrates everything numerically; the code that produces every
 figure is in the \texttt{experiments/} folder of the repository.
 
 \paragraph{Relation to the literature.} The extrapolated-point (``virtual sequence'')
@@ -167,4 +171,6 @@ technique and potentials of this type are classical in analyses of momentum
 methods~\cite{ghadimi2015,yang2016,yu2019,liu2020,sebbouh2021}. The aim here is a
 self-contained, fully explicit version---one potential, one key inequality, and explicit
 constants---written so that each line can be checked by hand. Constants are chosen for
-readability, not optimized.
+readability, not optimized. For readers who prefer to avoid potentials altogether,
+\cref{sec:lyapunov-free} proves the main nonconvex rate by analyzing the function value
+$f(x_k)$ directly.

@@ -34,11 +34,18 @@ go up even without noise. The fix:
    $x_k$ instead of $z_k$ creates error.
 3. **Everything else follows as for SGD.** Telescoping gives the guarantees below.
 
+**A second proof without any Lyapunov function** (Section 8 of the report) tracks only
+$f(x_k)$. It treats the momentum $\bar m_k$ as an inexact gradient, splits its error into a
+bias (the average lags behind the moving gradient) and averaged noise (variance reduced by
+$\frac{1-\beta}{1+\beta}$), and shows that this noise is almost orthogonal to the current
+gradient. It needs the slightly stronger restriction $\beta\le1-4L\gamma$.
+
 ## What is proved
 
 | Setting | Step-size condition | Guarantee |
 |---|---|---|
 | Nonconvex, $L$-smooth | $\alpha\le\frac{(1-\beta)^2}{2L}$ | $\frac1K\sum_{k<K}\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac{4\Delta}{\gamma K}+4L\gamma\sigma^2$ |
+| Nonconvex, **no Lyapunov function** | $\alpha\le\frac{(1-\beta)^2}{4L}$ | $\frac1K\sum_{k<K}\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac{5\Delta}{2\gamma K}+4L\gamma\sigma^2$ |
 | Nonconvex, tuned $\gamma$ | $\gamma\propto 1/\sqrt K$ | $O\big(\frac{L\Delta}{(1-\beta)K}+\sigma\sqrt{L\Delta/K}\big)$, the same leading term as SGD |
 | Nonconvex, decaying steps | $\sum\gamma_k=\infty,\ \sum\gamma_k^2<\infty$ | $\liminf_k\Vert \nabla f(x_k)\Vert =0$ almost surely |
 | Exact gradients | $\alpha<\frac{2(1-\beta)}{L}$ | $\nabla f(x_k)\to0$ (mechanical energy decreases) |
