@@ -35,11 +35,11 @@ go up even without noise. The fix:
 3. **Everything else follows as for SGD.** Telescoping gives the guarantees below.
 
 **A second proof without any Lyapunov function** (Sections 8 and 9 of the report) tracks only
-$f(x_k)$. It treats the momentum $\bar m_k$ as an inexact gradient, splits its error into a
+$f(x_k)$ (for convex functions: the distance to a minimizer, as for SGD). It treats the momentum $\bar m_k$ as an inexact gradient, splits its error into a
 bias (the average lags behind the moving gradient) and averaged noise (variance reduced by
 $\frac{1-\beta}{1+\beta}$), and shows that this noise is almost orthogonal to the current
 gradient. It needs the slightly stronger restriction $\beta\le1-4L\gamma$. Section 9 extends it
-to the other settings (table below; only the large-step results need the potential): one *weighted error budget* bounds the accumulated errors whenever the
+to the other settings (table below): one *weighted error budget* bounds the accumulated errors whenever the
 one-step inequalities are summed (nonconvex) or unrolled as a contraction (PL), and for convex
 functions an exact summation-by-parts identity accounts for the lag of the momentum.
 
@@ -64,16 +64,17 @@ Here $\Delta=f(x_0)-f^\star$ and $\gamma=\alpha/(1-\beta)$.
 |---|---|---|
 | Nonconvex | $L\gamma\le\frac{1-\beta}{4}$ | $\frac1K\sum_{k<K}\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac{5\Delta}{2\gamma K}+2L\gamma\sigma^2$ |
 | Exact gradients | $L\gamma\le\frac{1-\beta}{4}$ | $f(x_k)-f^\star\le(1+\frac\beta4)\Delta$ for all $k$, $\sum_k\Vert \nabla f(x_k)\Vert^2\le\frac{(4+\beta)\Delta}{2\gamma}$ |
-| Decreasing steps, momentum-buffer form (as in PyTorch) | $\gamma_k$ non-increasing, $L\gamma_0\le\frac{1-\beta}{4}$ | $\sum_k\gamma_k\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac52\Delta+2L\sigma^2\sum_k\gamma_k^2$ |
+| Decreasing steps, momentum-buffer form (PyTorch-style, learning rate $\eta_k=(1-\beta)\gamma_k$) | $\gamma_k$ non-increasing and fixed in advance, $\eta_0\le\frac{(1-\beta)^2}{4L}$ | $\sum_k\gamma_k\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac52\Delta+2L\sigma^2\sum_k\gamma_k^2$ |
 | PL inequality | $L\gamma\le\frac{1-\beta}{4}$, $\mu\le\frac L4$ | $\mathbb E f(x_k)-f^\star\le\frac{19}{15}(1-\gamma\mu)^k\Delta+\frac{L\gamma\sigma^2}{\mu}$ |
-| PL, decaying steps | $\gamma_k=\frac{8}{\mu(k+a)}$, $a\ge\frac{32L}{\mu(1-\beta)}$ | $\mathbb E f(x_k)-f^\star=O\big(\frac{a^2\Delta}{k^2}+\frac{L\sigma^2}{\mu^2k}\big)$ |
+| PL, decaying steps (momentum-buffer form) | $\gamma_k=\frac{8}{\mu(k+a)}$, $a\ge\frac{32L}{\mu(1-\beta)}$ | $\mathbb E f(x_k)-f^\star=O\big(\frac{a^2\Delta}{k^2}+\frac{L\sigma^2}{\mu^2k}\big)$ |
 | Convex | $L\gamma\le\frac{1-\beta}{4(1+\beta)}$ | $\mathbb E f(\hat x_K)-f^\star\le\frac{2\Vert x_0-x^\star\Vert^2}{\gamma K}+4\gamma\sigma^2$ (weighted average, $K\ge\frac{2\beta}{1-\beta}$) |
-| Noise growing with the gradient | $L\gamma\le\min\{\frac{1-\beta}{4},\frac{1}{4M}\}$ | $\frac1K\sum_{k<K}\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac{5\Delta}{\gamma K}+4L\gamma\sigma^2$ |
+| Noise growing with the gradient | $L\gamma\le\frac{1-\beta}{4}$ and $LM\gamma\le\frac14$ | $\frac1K\sum_{k<K}\mathbb E\Vert \nabla f(x_k)\Vert^2\le\frac{5\Delta}{\gamma K}+4L\gamma\sigma^2$ |
 
-What the potential buys is a wider range of step sizes: without it the iterates must move
-slowly compared with the memory of the momentum ($L\gamma\lesssim1-\beta$), so the large-step
-results (exact gradients with $\alpha<\frac{2(1-\beta)}{L}$; convex functions with
-$L\gamma\le\frac12$) need the energy/Lyapunov argument.
+What the potential buys is flexibility. Without it the iterates must move slowly compared
+with the memory of the momentum ($L\gamma\lesssim1-\beta$), so the large-step results (exact
+gradients with $\alpha<\frac{2(1-\beta)}{L}$; convex functions with $L\gamma\le\frac12$) need the
+energy/Lyapunov argument; and varying steps are covered only for non-increasing schedules
+fixed in advance (no warm-up), in the momentum-buffer form.
 
 ## Under what circumstances? (Section 7 of the report)
 

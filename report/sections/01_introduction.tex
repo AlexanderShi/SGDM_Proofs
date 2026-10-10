@@ -120,7 +120,7 @@ Nonconvex, decaying & $\gamma_k\le\frac{1-\beta}{2L}$, $\sum\gamma_k=\infty$, $\
   $\liminf_k\norm{\nabla f(x_k)}=0$ almost surely &
   \cref{thm:diminishing}\\
 Decaying, buffer form & $\gamma_k\downarrow$, $\gamma_0\le\frac{1-\beta}{4L}$, same sums &
-  the same, for learning-rate schedules as used in practice &
+  the same, for the momentum-buffer form of PyTorch-style implementations &
   \cref{thm:lf-diminishing}\\
 No noise ($\sigma=0$) & $\alpha=\frac{(1-\beta)^2}{2L}$ &
   $\Phi_k$ non-increasing; $\min_{k<K}\norm{\nabla f(x_k)}^2\le\frac{8L\Dlt}{(1-\beta)K}$ &
@@ -140,16 +140,16 @@ Convex & $\alpha\le\frac{1-\beta}{2L}$ &
 \bottomrule
 \end{tabularx}
 \caption{Summary of the guarantees proved in this report (all for SGDM in heavy-ball form
-with momentum $\beta\in[0,1)$; for $\beta=0$ they reduce to the corresponding SGD results
-up to constants). The question ``under what circumstances?'' is discussed in
+with momentum $\beta\in[0,1)$, except the buffer-form row; for $\beta=0$ they reduce to the
+corresponding SGD results up to constants). The question ``under what circumstances?'' is discussed in
 \cref{sec:circumstances}: there we show that the noise floor $\propto\gamma\sigma^2$ is
 unavoidable with a constant step (\cref{prop:noise-floor}), that too large a step size
 makes the method diverge or cycle (\cref{prop:quadratic-stability},
 \cref{ex:lrp}), and how the admissible step sizes shrink as $\beta\to1$
 (\cref{fig:regions}). \Cref{sec:lyapunov-free,sec:lf-all} prove analogues of these results without a
 potential, under stricter step-size conditions (for decaying steps, in the momentum-buffer
-form); only the large-step result of \cref{prop:energy} has no such analogue.
-\Cref{tab:lf-vs-lyap} compares the two proofs.}
+form); only the $\beta$-independent step-size ranges of \cref{prop:energy} and
+\cref{thm:convex} have no such analogue. \Cref{tab:lf-vs-lyap} compares the two proofs.}
 \label{tab:summary}
 \end{table}
 
@@ -179,4 +179,4 @@ self-contained, fully explicit version---one potential, one key inequality, and 
 constants---written so that each line can be checked by hand. Constants are chosen for
 readability, not optimized. For readers who prefer to avoid potentials altogether,
 \cref{sec:lyapunov-free,sec:lf-all} prove the main results by analyzing the function value
-$f(x_k)$ directly.
+$f(x_k)$ directly (for convex functions, the distance to a minimizer, as for SGD).

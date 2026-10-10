@@ -37,12 +37,13 @@ nonconvex rate by tracking only $f(x_k)$, at the price of the slightly stronger 
 $\beta\le1-4L\gamma$ on the momentum. There, momentum is an exponentially averaged gradient
 estimate whose bias is controlled by the slow motion of the iterates and whose averaged noise
 is almost orthogonal to the current gradient. \Cref{sec:lf-all} extends this argument to
-every other setting of \cref{sec:convergence}: exact gradients, decreasing steps (in the
-momentum-buffer form used in practice, which the potential argument does not cover),
-the PL inequality with constant and decaying steps, convex functions (where, as for SGD,
-the distance to a minimizer is tracked), and noise that grows with the gradient. One
-weighted error budget (\cref{lem:weighted-budget}) does most of the work. What the
-potential buys is a wider range of step sizes: the Lyapunov-free argument needs the iterates
-to move slowly compared with the memory of the momentum, $L\gamma\lesssim1-\beta$, whereas the
-energy argument of \cref{prop:energy} and the convex \cref{thm:convex} allow effective steps
-that do not shrink as $\beta\to1$.
+the other settings of \cref{sec:convergence}: exact gradients, decreasing steps and the PL
+inequality with decaying steps (both in the momentum-buffer form used in practice, which the
+potential argument does not cover for varying steps), the PL inequality with a constant
+step, and convex functions (where, as for SGD, the distance to a minimizer is tracked); it
+also handles noise that grows with the gradient. One weighted error budget
+(\cref{lem:weighted-budget}) does most of the work. What the potential buys is flexibility.
+The Lyapunov-free argument needs the iterates to move slowly compared with the memory of the
+momentum, $L\gamma\lesssim1-\beta$, whereas the energy argument of \cref{prop:energy} and the
+convex \cref{thm:convex} allow effective steps that do not shrink as $\beta\to1$; and with
+varying steps it needs a non-increasing schedule fixed in advance.

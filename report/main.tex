@@ -97,10 +97,12 @@ heavy-ball method on quadratics, prove that without noise a mechanical energy de
 every smooth function when $\alpha<2(1-\beta)/L$, and verify by hand a classical
 counterexample in which momentum parameters tuned for quadratics make the method cycle on a
 strongly convex function. Finally, we give a second proof that uses no Lyapunov function at all: it analyzes
-$f(x_k)$ directly, treating the momentum as a biased, low-variance estimate of the gradient.
-It gives analogues of (i)--(iv), with (ii) for learning-rate schedules in the
-momentum-buffer form used in practice, under somewhat stricter step-size conditions that keep
-the iterates slow compared with the memory of the momentum. Numerical experiments illustrate each statement. Only
+$f(x_k)$ directly (for convex functions, the distance to a minimizer, as for SGD), treating the
+momentum as a biased, low-variance estimate of the gradient. It gives analogues of
+(i)--(iv), with (ii) for learning-rate schedules in the momentum-buffer form used in
+practice, under stricter step-size conditions that keep the iterates slow compared with the
+memory of the momentum (stricter by a factor of $2$ in the nonconvex and PL settings, and by
+a factor of order $1/(1-\beta)$ for convex functions). Numerical experiments illustrate each statement. Only
 multivariable calculus, linear algebra and basic probability are assumed.
 \end{abstract}
 

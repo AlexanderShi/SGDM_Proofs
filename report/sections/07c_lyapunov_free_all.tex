@@ -23,8 +23,7 @@ The proofs follow the SGD template of \cref{sec:template}, with one extra step:
   \emph{weighted} sum $\sum_kw_kZ_k$ of the error terms.
 \item \emph{Bound the weighted error sum} (\cref{lem:weighted-budget}). On average over
   time, $Z_k$ costs at most $L\gamma_k^2\sigma^2$, which is twice the noise term of SGD,
-  plus a one-time cost of at most $\frac\beta4\Dlt$ caused by starting the moving average
-  at zero.
+  plus a one-time cost of order $\beta\Dlt$ caused by starting the moving average at zero.
 \end{enumerate}
 
 \subsection{Varying step sizes and the weighted error budget}
@@ -58,37 +57,38 @@ where
 \begin{tcolorbox}[keybox]
 \begin{lemma}[Weighted error budget]\label{lem:weighted-budget}
 Let \cref{as:smooth,as:lower,as:unbiased,as:variance} hold. Let the step sizes be
-non-increasing, $\gamma_0\ge\gamma_1\ge\gamma_2\ge\dots>0$, with
-$L\gamma_0\le\frac{1-\beta}{4}$. Fix $K\ge1$ and weights $w_0,\dots,w_{K-1}\ge0$ that do not
-grow too fast: for some $\theta$ with $0<\theta\le\frac{16}{15+\beta}$,
+deterministic (fixed before the run) and non-increasing, $\gamma_0\ge\gamma_1\ge\gamma_2\ge\dots>0$,
+with $L\gamma_0\le\frac{1-\beta}{4}$. Fix $K\ge1$ and deterministic weights
+$w_0,\dots,w_{K-1}\ge0$ that do not grow too fast: for some $\theta$ with
+$0<\theta\le\frac{16}{15+\beta}$,
 \[
   w_k\le\theta\,w_{k-1}\qquad(1\le k\le K-1).
 \]
-Put $\rho:=\frac{1-\beta}{1-\theta\beta}$. Then
+Put $\omega:=\frac{1-\beta}{1-\theta\beta}$. Then
 \begin{equation}\label{eq:weighted-budget}
   \sum_{k=0}^{K-1}w_k\,\E Z_k
-  \le\frac{\rho\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2+L\sigma^2\sum_{k=0}^{K-1}w_k\gamma_k^2
-  \le\frac{\rho\beta}{4}\,w_0\Dlt+L\sigma^2\sum_{k=0}^{K-1}w_k\gamma_k^2 .
+  \le\frac{\omega\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2+L\sigma^2\sum_{k=0}^{K-1}w_k\gamma_k^2
+  \le\frac{\omega\beta}{4}\,w_0\Dlt+L\sigma^2\sum_{k=0}^{K-1}w_k\gamma_k^2 .
 \end{equation}
-Moreover $\rho\le\frac{16}{15}$ and $\theta\rho\le\frac{16}{15}$. Constant weights are allowed
-with $\theta=1$, and then $\rho=1$.
+Moreover $\omega\le\frac{16}{15}$ and $\theta\omega\le\frac{16}{15}$. Constant weights are allowed
+with $\theta=1$, and then $\omega=1$.
 \end{lemma}
 \end{tcolorbox}
 
 \begin{proof}
-\emph{The constants.} Since $\theta\beta\le\frac{16\beta}{15+\beta}<1$, $\rho$ is well
-defined and positive. Both $\rho$ and $\theta\rho$ increase with $\theta$. At
+\emph{The constants.} Since $\theta\beta\le\frac{16\beta}{15+\beta}<1$, $\omega$ is well
+defined and positive. Both $\omega$ and $\theta\omega$ increase with $\theta$. At
 $\theta=\frac{16}{15+\beta}$ we have $1-\theta\beta=\frac{15(1-\beta)}{15+\beta}$, hence
-$\rho=\frac{15+\beta}{15}\le\frac{16}{15}$ and $\theta\rho=\frac{16}{15}$. Put
+$\omega=\frac{15+\beta}{15}\le\frac{16}{15}$ and $\theta\omega=\frac{16}{15}$. Put
 \[
-  \kappa:=\theta\rho\le\frac{16}{15},\qquad u_k:=\frac{L\gamma_k}{1-\beta}\le\frac14 .
+  \zeta:=\theta\omega\le\frac{16}{15},\qquad u_k:=\frac{L\gamma_k}{1-\beta}\le\frac14 .
 \]
 
-\emph{Step 0: a geometric sum.} For $k\ge j$, the two monotonicity assumptions give
-$w_k\gamma_k\le\theta^{k-j}w_j\gamma_j$. Hence, for every $j\ge0$, by the geometric series,
+\emph{Step 0: a geometric sum.} For $k\ge j$, the growth bound on the weights and the
+monotonicity of the steps give $w_k\gamma_k\le\theta^{k-j}w_j\gamma_j$. Hence, for every $j\ge0$, by the geometric series,
 \begin{equation}\label{eq:wb-geom}
   \sum_{k=j}^{K-1}w_k\gamma_k\beta^{k-j}\le w_j\gamma_j\sum_{i=0}^\infty(\theta\beta)^i
-  =\frac{\rho}{1-\beta}\,w_j\gamma_j ,
+  =\frac{\omega}{1-\beta}\,w_j\gamma_j ,
   \qquad\text{and}\qquad w_j\gamma_j\le\theta\,w_{j-1}\gamma_{j-1}\ (j\ge1).
 \end{equation}
 
@@ -100,8 +100,8 @@ double sum, and apply \eqref{eq:wb-geom} (with $j=0$ to the first term, using
 $\sum_kw_k\gamma_k\beta^{k+1}=\beta\sum_kw_k\gamma_k\beta^k$):
 \[
   \sum_{k=0}^{K-1}\frac{w_k\gamma_k}{2}\norm{b_k}^2
-  \le\frac{\rho\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2
-  +\frac{\rho\beta^2}{2(1-\beta)^2}\sum_{j=1}^{K-1}w_j\gamma_j\norm{\delta_j}^2 .
+  \le\frac{\omega\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2
+  +\frac{\omega\beta^2}{2(1-\beta)^2}\sum_{j=1}^{K-1}w_j\gamma_j\norm{\delta_j}^2 .
 \]
 For $j\ge1$, part (c) and \cref{lem:elementary}(e) give
 $\norm{\delta_j}^2\le L^2\gamma_{j-1}^2\norm{p_{j-1}+n_{j-1}}^2\le2L^2\gamma_{j-1}^2\bigl(\norm{p_{j-1}}^2+\norm{n_{j-1}}^2\bigr)$,
@@ -109,52 +109,64 @@ and $w_j\gamma_j\le\theta w_{j-1}\gamma_{j-1}$ by \eqref{eq:wb-geom}. Since
 $\frac{L^2\gamma_i^2}{(1-\beta)^2}=u_i^2$, writing $i=j-1$ we obtain
 \begin{equation}\label{eq:wb-bias}
   \sum_{k=0}^{K-1}\frac{w_k\gamma_k}{2}\norm{b_k}^2
-  \le\frac{\rho\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2
-  +\kappa\beta^2\sum_{i=0}^{K-2}w_i\gamma_iu_i^2\bigl(\norm{p_i}^2+\norm{n_i}^2\bigr).
+  \le\frac{\omega\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2
+  +\zeta\beta^2\sum_{i=0}^{K-2}w_i\gamma_iu_i^2\bigl(\norm{p_i}^2+\norm{n_i}^2\bigr).
 \end{equation}
 
 \emph{Step 2: the noise--gradient correlation.} By \cref{lem:noise-correlation},
 \[
   -\E\ip{\nabla f(x_k)}{n_k}=\sum_{i=1}^k\beta^{k-i+1}\,\E\ip{\delta_i}{n_{i-1}} .
 \]
-Multiply by $w_k\gamma_k$, sum over $k<K$ and exchange the order of summation. The inner sums
-$\sum_{k=i}^{K-1}w_k\gamma_k\beta^{k-i+1}$ are non-negative and, by \eqref{eq:wb-geom}, at
-most $\frac{\rho\beta}{1-\beta}w_i\gamma_i$; with Cauchy--Schwarz,
+Multiply by $w_k\gamma_k$ (a number, since steps and weights are deterministic), sum over
+$k<K$ and exchange the order of summation:
+\[
+  -\sum_{k=0}^{K-1}w_k\gamma_k\E\ip{\nabla f(x_k)}{n_k}=\sum_{i=1}^{K-1}A_i\,\E\ip{\delta_i}{n_{i-1}},
+  \qquad A_i:=\sum_{k=i}^{K-1}w_k\gamma_k\beta^{k-i+1}.
+\]
+The sign of $\E\ip{\delta_i}{n_{i-1}}$ is not known. But $0\le A_i\le\frac{\omega\beta}{1-\beta}w_i\gamma_i$
+by \eqref{eq:wb-geom}, and by Cauchy--Schwarz $\E\ip{\delta_i}{n_{i-1}}$ is at most the
+non-negative number $\E\bigl[\norm{\delta_i}\norm{n_{i-1}}\bigr]$. Hence
+\[
+  A_i\,\E\ip{\delta_i}{n_{i-1}}\le A_i\,\E\bigl[\norm{\delta_i}\norm{n_{i-1}}\bigr]
+  \le\frac{\omega\beta}{1-\beta}\,w_i\gamma_i\,\E\bigl[\norm{\delta_i}\norm{n_{i-1}}\bigr],
+\]
+and summing over $i$,
 \[
   -\sum_{k=0}^{K-1}w_k\gamma_k\E\ip{\nabla f(x_k)}{n_k}
-  \le\frac{\rho\beta}{1-\beta}\sum_{i=1}^{K-1}w_i\gamma_i\,\E\bigl[\norm{\delta_i}\norm{n_{i-1}}\bigr].
+  \le\frac{\omega\beta}{1-\beta}\sum_{i=1}^{K-1}w_i\gamma_i\,\E\bigl[\norm{\delta_i}\norm{n_{i-1}}\bigr].
 \]
 As in Step~4 of the proof of \cref{thm:lf},
 $\norm{\delta_i}\norm{n_{i-1}}\le L\gamma_{i-1}\bigl(\frac12\norm{p_{i-1}}^2+\frac32\norm{n_{i-1}}^2\bigr)$.
 Using $w_i\gamma_i\le\theta w_{i-1}\gamma_{i-1}$ once more and shifting the index,
 \begin{equation}\label{eq:wb-corr}
   -\sum_{k=0}^{K-1}w_k\gamma_k\E\ip{\nabla f(x_k)}{n_k}
-  \le\kappa\beta\sum_{i=0}^{K-2}w_i\gamma_iu_i\Bigl(\frac12\E\norm{p_i}^2+\frac32\E\norm{n_i}^2\Bigr).
+  \le\zeta\beta\sum_{i=0}^{K-2}w_i\gamma_iu_i\Bigl(\frac12\E\norm{p_i}^2+\frac32\E\norm{n_i}^2\Bigr).
 \end{equation}
 
 \emph{Step 3: collect.} Multiply \eqref{eq:Zk} by $w_k$, take expectations, sum over
-$k<K$, and insert \eqref{eq:wb-bias} and \eqref{eq:wb-corr}. Extending the sums over
+$k<K$, and insert \eqref{eq:wb-corr} and the expectation of \eqref{eq:wb-bias} (which holds
+along every trajectory). Extending the sums over
 $i\le K-2$ to $i\le K-1$ only adds non-negative terms, so
 \begin{align*}
   \sum_{k=0}^{K-1}w_k\E Z_k
-  \le\frac{\rho\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2
-  &-\sum_{k=0}^{K-1}\frac{w_k\gamma_k}{2}\Bigl[1-2L\gamma_k-2\kappa\beta^2u_k^2-\kappa\beta u_k\Bigr]\E\norm{p_k}^2\\
-  &+\sum_{k=0}^{K-1}w_k\gamma_k\Bigl[\kappa\beta^2u_k^2+\tfrac32\kappa\beta u_k+L\gamma_k\Bigr]\E\norm{n_k}^2 .
+  \le\frac{\omega\beta\gamma_0}{2(1-\beta)}\,w_0\norm{\nabla f(x_0)}^2
+  &-\sum_{k=0}^{K-1}\frac{w_k\gamma_k}{2}\Bigl[1-2L\gamma_k-2\zeta\beta^2u_k^2-\zeta\beta u_k\Bigr]\E\norm{p_k}^2\\
+  &+\sum_{k=0}^{K-1}w_k\gamma_k\Bigl[\zeta\beta^2u_k^2+\tfrac32\zeta\beta u_k+L\gamma_k\Bigr]\E\norm{n_k}^2 .
 \end{align*}
 \emph{The $p$-terms.} Since $L\gamma_k=(1-\beta)u_k\le\frac{1-\beta}{4}$, $u_k\le\frac14$,
-$\beta^2\le\beta$ and $\kappa\le\frac{16}{15}$, the first bracket is at least
+$\beta^2\le\beta$ and $\zeta\le\frac{16}{15}$, the first bracket is at least
 $1-\frac{1-\beta}{2}-\frac{16}{15}\bigl(\frac\beta8+\frac\beta4\bigr)=\frac12+\frac{\beta}{10}>0$.
 So the $p$-terms are non-positive and can be dropped.
 
 \emph{The $n$-terms.} Since $\gamma_ku_k=\frac{L\gamma_k^2}{1-\beta}$ and
 $\E\norm{n_k}^2\le\frac{1-\beta}{1+\beta}\sigma^2$ (\cref{lem:bias-variance}(b)),
 \begin{align*}
-  w_k\gamma_k\Bigl[\kappa\beta^2u_k^2+\tfrac32\kappa\beta u_k+L\gamma_k\Bigr]\E\norm{n_k}^2
-  &\le w_kL\gamma_k^2\sigma^2\cdot\frac{\kappa\beta^2u_k+\frac32\kappa\beta+1-\beta}{1+\beta}\\
+  w_k\gamma_k\Bigl[\zeta\beta^2u_k^2+\tfrac32\zeta\beta u_k+L\gamma_k\Bigr]\E\norm{n_k}^2
+  &\le w_kL\gamma_k^2\sigma^2\cdot\frac{\zeta\beta^2u_k+\frac32\zeta\beta+1-\beta}{1+\beta}\\
   &\le w_kL\gamma_k^2\sigma^2\cdot\frac{1+\frac35\beta+\frac4{15}\beta^2}{1+\beta}
   \le w_kL\gamma_k^2\sigma^2 .
 \end{align*}
-Here we used $\kappa\le\frac{16}{15}$ and $u_k\le\frac14$ for the middle inequality, and
+Here we used $\zeta\le\frac{16}{15}$ and $u_k\le\frac14$ for the middle inequality, and
 $\frac4{15}\beta^2\le\frac25\beta$ for the last one. This proves the first inequality in
 \eqref{eq:weighted-budget}. The second follows from $\norm{\nabla f(x_0)}^2\le2L\Dlt$
 (\cref{lem:grad-gap}) and $\frac{L\gamma_0}{1-\beta}=u_0\le\frac14$.
@@ -185,7 +197,7 @@ Consequently:
 \begin{proof}
 Without noise $\eps_k=0$ and $n_k=0$, and everything is deterministic. Sum
 \eqref{eq:lf-step-varying} over $k<K$ and apply \cref{lem:weighted-budget} with constant
-weights ($\theta=\rho=1$, $\sigma=0$):
+weights ($\theta=\omega=1$, $\sigma=0$):
 $f(x_K)\le f(x_0)-\frac\gamma2\sum_{k<K}\norm{\nabla f(x_k)}^2+\frac\beta4\Dlt$. Subtract $\fs$.
 (i) Drop the sum (for $k=0$ the claim is trivial). (ii) Drop $f(x_K)-\fs\ge0$: the partial
 sums of the series are bounded by $\frac{2}{\gamma}(1+\frac\beta4)\Dlt=\frac{(4+\beta)\Dlt}{2\gamma}$,
@@ -206,8 +218,8 @@ $\alpha<\frac{2(1-\beta)}{L}$. The method of this section does not reach that ra
 \begin{tcolorbox}[keybox]
 \begin{theorem}[Lyapunov-free proof with decreasing steps]\label{thm:lf-diminishing}
 Let \cref{as:smooth,as:lower,as:unbiased,as:variance} hold and $\beta\in[0,1)$. Run
-\eqref{eq:ema-varying} with non-increasing step sizes $\gamma_0\ge\gamma_1\ge\dots>0$ such that
-$L\gamma_0\le\frac{1-\beta}{4}$. Then for every $K\ge1$,
+\eqref{eq:ema-varying} with deterministic, non-increasing step sizes $\gamma_0\ge\gamma_1\ge\dots>0$
+such that $L\gamma_0\le\frac{1-\beta}{4}$. Then for every $K\ge1$,
 \begin{equation}\label{eq:lf-diminishing}
   \sum_{k=0}^{K-1}\gamma_k\,\E\norm{\nabla f(x_k)}^2\le\Bigl(2+\frac\beta2\Bigr)\Dlt+2L\sigma^2\sum_{k=0}^{K-1}\gamma_k^2
   \le\frac52\Dlt+2L\sigma^2\sum_{k=0}^{K-1}\gamma_k^2 .
@@ -243,11 +255,13 @@ $m_k:=\bar m_k/(1-\beta)$ and $\eta_k:=(1-\beta)\gamma_k$. Then \eqref{eq:ema-va
 the momentum-buffer form with a learning-rate schedule $\eta_k$. This is the update of
 common deep-learning implementations, for example PyTorch's \texttt{SGD} optimizer with
 momentum $\beta$ and no dampening. The condition $L\gamma_0\le\frac{1-\beta}{4}$ reads
-$\eta_0\le\frac{(1-\beta)^2}{4L}$. So \cref{thm:lf-diminishing} covers the momentum-buffer form
-with any non-increasing schedule, which the Lyapunov argument of \cref{sec:convergence} does
-not cover (\cref{rem:varying}). Conversely, \cref{thm:diminishing} covers the heavy-ball form
-and does not need the steps to be monotone. Piecewise-constant schedules (step decay) are
-non-increasing, so they are included.
+$\eta_0\le\frac{(1-\beta)^2}{4L}$. So inequality \eqref{eq:lf-diminishing} holds for the momentum-buffer form with any
+non-increasing schedule fixed in advance, for instance step decay or cosine decay; the
+Lyapunov argument of \cref{sec:convergence} does not cover this form (\cref{rem:varying}).
+Schedules with a warm-up phase (which are not monotone) and schedules that react to the
+data (which are random) are not covered: the proof of \cref{lem:weighted-budget} takes the
+numbers $w_k\gamma_k$ out of expectations. Conversely, \cref{thm:diminishing} covers the
+heavy-ball form and does not need the steps to be monotone.
 \end{remark}
 
 \subsection{Functions satisfying the PL inequality}
@@ -276,7 +290,7 @@ In particular:
 \end{tcolorbox}
 
 \begin{proof}
-For $K=0$ the claim holds because $r_0=\Dlt$; let $K\ge1$. Put $r_k:=f(x_k)-\fs\ge0$.
+Put $r_k:=f(x_k)-\fs\ge0$. For $K=0$ the claim holds because $r_0=\Dlt$; let $K\ge1$.
 
 \emph{Step 1: a contraction with an error.} By the PL inequality,
 $-\frac\gamma2\norm{\nabla f(x_k)}^2\le-\gamma\mu\,r_k$, so \eqref{eq:lf-step-varying} gives
@@ -291,8 +305,8 @@ $q\le\gamma\mu$.
 \emph{Step 3: the weighted error sum.} The weights satisfy $w_k=\theta w_{k-1}$ with
 $\theta:=\frac1{1-q}$, and $\theta\le\frac{16}{15+\beta}$ because this is equivalent to
 $16q\le1-\beta$. Take expectations and apply \cref{lem:weighted-budget}. Since
-$w_0=(1-q)^{K-1}=\theta(1-q)^K$ and $\theta\rho\le\frac{16}{15}$, the initial term is at most
-$\frac{\rho\beta}{4}\theta(1-q)^K\Dlt\le\frac{4\beta}{15}(1-q)^K\Dlt$. By the geometric series,
+$w_0=(1-q)^{K-1}=\theta(1-q)^K$ and $\theta\omega\le\frac{16}{15}$, the initial term is at most
+$\frac{\omega\beta}{4}\theta(1-q)^K\Dlt\le\frac{4\beta}{15}(1-q)^K\Dlt$. By the geometric series,
 $\sum_{k<K}w_k=\sum_{i<K}(1-q)^i\le\frac1q$. Hence
 $\E r_K\le(1-q)^K\Dlt+\frac{4\beta}{15}(1-q)^K\Dlt+\frac{L\gamma^2\sigma^2}{q}$, which is
 \eqref{eq:lf-pl}.
@@ -314,7 +328,7 @@ again momentum does not accelerate.
 
 \begin{corollary}[PL inequality, decaying steps]\label{cor:lf-pl-decay}
 Under the assumptions of \cref{thm:lf-pl} except for the step size, run
-\eqref{eq:ema-varying} with
+\eqref{eq:ema-varying} (the momentum-buffer form, \cref{rem:which-algorithm}) with
 \[
   \gamma_k=\frac{8}{\mu(k+a)},\qquad a\ge\frac{32L}{\mu(1-\beta)} .
 \]
@@ -337,7 +351,7 @@ $0<1-q_k<1$), along every trajectory
 \]
 \emph{The weighted error sum.} Here $w_k/w_{k-1}=\frac{1}{1-q_k}\le\frac1{1-q_0}=:\theta$, and
 $q_0=\frac2a\le\frac{\mu(1-\beta)}{16L}\le\frac{1-\beta}{16}$, so $\theta\le\frac{16}{15+\beta}$.
-By \cref{lem:weighted-budget}, with $w_0=P_1=\theta P_0$ and $\theta\rho\le\frac{16}{15}$,
+By \cref{lem:weighted-budget}, with $w_0=P_1=\theta P_0$ and $\theta\omega\le\frac{16}{15}$,
 \[
   \E r_K\le\Bigl(1+\frac{4\beta}{15}\Bigr)P_0\Dlt+L\sigma^2\sum_{k=0}^{K-1}P_{k+1}\gamma_k^2 .
 \]
@@ -352,9 +366,11 @@ $\sum_{k<K}P_{k+1}\gamma_k^2\le\sum_{k<K}\frac{(k+a)^2}{(K+a-1)^2}\cdot\frac{64}
 $1+\frac{4\beta}{15}\le\frac{19}{15}$.
 \end{proof}
 
-Compared with \cref{cor:pl-decay}, the noise term is again of order
-$\frac{L\sigma^2}{\mu^2k}$, while the initial gap is forgotten at the faster rate $1/k^2$.
-The price is the larger offset $a$.
+As in \cref{cor:pl-decay}, which treats the heavy-ball form, the noise term is of order
+$\frac{L\sigma^2}{\mu^2k}$; here the offset $a$ must be twice as large. The initial gap is
+forgotten at the rate $1/k^2$. This is not an advantage of the method: unrolling the
+recursion in the proof of \cref{cor:pl-decay} with the same product bound gives
+$\E f(x_k)-\fs\le2\bigl(\frac{a-1}{k+a-1}\bigr)^2\Dlt+\frac{128L\sigma^2}{\mu^2(k+a-1)}$ there as well.
 
 \subsection{Convex functions}
 
@@ -384,9 +400,13 @@ Writing $x_k-y=(x_j-y)+(x_k-x_j)$ inside each term,
 \]
 In $T_1$, exchange the sums: for fixed $j$, $(1-\beta)\sum_{k=j}^{K-1}\beta^{k-j}=1-\beta^{K-j}=c_j$
 (\cref{lem:elementary}(f)), so $T_1=\sum_jc_j\ip{g_j}{x_j-y}$. In $T_2$, insert
-$x_k-x_j=-\gamma\sum_{i=j}^{k-1}\bar m_i$. The indices then range over $j\le i<k\le K-1$, and
-for fixed $i$ and $j$ the sum over $k$ is
-$(1-\beta)\sum_{k=i+1}^{K-1}\beta^{k-j}=\beta^{i+1-j}\bigl(1-\beta^{K-1-i}\bigr)$. Therefore
+$x_k-x_j=-\gamma\sum_{i=j}^{k-1}\bar m_i$. The indices then range over $j\le i<k\le K-1$, so
+\[
+  T_2=-\gamma\sum_{i=0}^{K-2}\sum_{j=0}^{i}\Bigl[(1-\beta)\sum_{k=i+1}^{K-1}\beta^{k-j}\Bigr]\ip{g_j}{\bar m_i},
+\]
+and the bracket equals $\beta^{i+1-j}\bigl(1-\beta^{K-1-i}\bigr)$ by the geometric series. The
+sum over $i$ may be extended to $i=K-1$, because for $i=K-1$ this factor is
+$1-\beta^0=0$. Therefore
 \[
   T_2=-\gamma\sum_{i=0}^{K-1}\bigl(1-\beta^{K-1-i}\bigr)\Bigl\langle\beta\sum_{j\le i}\beta^{i-j}g_j,\;\bar m_i\Bigr\rangle
   =-\gamma\sum_{i=0}^{K-1}\bigl(1-\beta^{K-1-i}\bigr)\frac{\beta}{1-\beta}\norm{\bar m_i}^2,
@@ -397,8 +417,8 @@ because $\sum_{j\le i}\beta^{i-j}g_j=\frac{\bar m_i}{1-\beta}$.
 Read from right to left, the identity says that each stochastic gradient $g_j$ acts as
 if it were applied at the point $x_j$ where it was computed, with total weight
 $c_j=1-\beta^{K-j}$. The missing fraction $\beta^{K-j}$ of its influence is still stored in
-the moving average at time $K$. The delay costs exactly the last term, which is quadratic
-in the steps.
+the last moving average $\bar m_{K-1}$ and would act only in later steps. The delay costs
+exactly the last term, which is quadratic in the steps.
 
 \begin{tcolorbox}[keybox]
 \begin{theorem}[Lyapunov-free proof, convex case]\label{thm:lf-convex}
@@ -407,19 +427,19 @@ $x^\star$ (so $\fs=f(x^\star)$), $\beta\in[0,1)$, and let the step be constant w
 \[
   L\gamma\le\frac{1-\beta}{4(1+\beta)} .
 \]
-Let $c_j=1-\beta^{K-j}$ as in \cref{lem:lag-identity}. Then for every $K\ge1$,
-\begin{equation}\label{eq:lf-convex}
-  \gamma\sum_{j=0}^{K-1}c_j\bigl(\E f(x_j)-\fs\bigr)+\E\norm{x_K-x^\star}^2\le\norm{x_0-x^\star}^2+2K\gamma^2\sigma^2 .
-\end{equation}
-Consequently, with $C_K:=\sum_{j<K}c_j$ and the weighted average
-$\hat x_K:=\frac1{C_K}\sum_{j<K}c_jx_j$,
-\[
-  \E f(\hat x_K)-\fs\le\frac{\norm{x_0-x^\star}^2+2K\gamma^2\sigma^2}{\gamma\,C_K},\qquad
-  C_K\ge K-\frac{\beta}{1-\beta},
-\]
-and for $K\ge\frac{2\beta}{1-\beta}$:
-$\;\E f(\hat x_K)-\fs\le\frac{2\norm{x_0-x^\star}^2}{\gamma K}+4\gamma\sigma^2$.
-Without noise, moreover, $\norm{x_K-x^\star}\le\norm{x_0-x^\star}$ for every $K$.
+Let $K\ge1$, $c_j=1-\beta^{K-j}$ as in \cref{lem:lag-identity}, $C_K:=\sum_{j<K}c_j$, and let
+$\hat x_K:=\frac1{C_K}\sum_{j<K}c_jx_j$ be the weighted average of the iterates.
+\begin{enumerate}[label=\textup{(\alph*)}]
+\item $\displaystyle\gamma\sum_{j=0}^{K-1}c_j\bigl(\E f(x_j)-\fs\bigr)+\E\norm{x_K-x^\star}^2\le\norm{x_0-x^\star}^2+2K\gamma^2\sigma^2$.
+\item $\displaystyle\E f(\hat x_K)-\fs\le\frac{\norm{x_0-x^\star}^2+2K\gamma^2\sigma^2}{\gamma\,C_K}$ and
+  $C_K\ge K-\frac{\beta}{1-\beta}$. In particular, if $K\ge\frac{2\beta}{1-\beta}$, then
+  $\E f(\hat x_K)-\fs\le\frac{2\norm{x_0-x^\star}^2}{\gamma K}+4\gamma\sigma^2$.
+\item With $D:=\norm{x_0-x^\star}>0$, $K\ge\frac{2\beta}{1-\beta}$ and
+  $\gamma=\min\bigl\{\frac{1-\beta}{4(1+\beta)L},\frac{D}{\sigma\sqrt K}\bigr\}$
+  ($\gamma=\frac{1-\beta}{4(1+\beta)L}$ if $\sigma=0$):
+  $\displaystyle\E f(\hat x_K)-\fs\le\frac{8(1+\beta)LD^2}{(1-\beta)K}+\frac{6\sigma D}{\sqrt K}$.
+\item Without noise, $\norm{x_K-x^\star}\le\norm{x_0-x^\star}$.
+\end{enumerate}
 \end{theorem}
 \end{tcolorbox}
 
@@ -451,7 +471,8 @@ Cauchy--Schwarz inequality for the numbers $\sqrt{\lambda_j}$ and $\sqrt{\lambda
 Summing over $k<K$, exchanging the sums as for $T_1$ above, and using \cref{lem:grad-gap},
 \[
   \sum_{k<K}\norm{a_k}^2\le\sum_{j<K}c_j\norm{\nabla f(x_j)}^2\le2L\sum_{j<K}c_j\bigl(f(x_j)-\fs\bigr).
-\] With \cref{lem:elementary}(e) and \cref{lem:bias-variance}(b),
+\]
+With \cref{lem:elementary}(e) and \cref{lem:bias-variance}(b),
 \[
   \E\sum_{k<K}\norm{\bar m_k}^2\le2\E\sum_{k<K}\norm{a_k}^2+2\sum_{k<K}\E\norm{n_k}^2
   \le4L\sum_{j<K}c_j\bigl(\E f(x_j)-\fs\bigr)+2K\,\frac{1-\beta}{1+\beta}\,\sigma^2 .
@@ -462,23 +483,26 @@ Summing over $k<K$, exchanging the sums as for $T_1$ above, and using \cref{lem:
   \E\norm{x_K-x^\star}^2\le\norm{x_0-x^\star}^2
   -2\gamma\Bigl[1-\frac{2L\gamma(1+\beta)}{1-\beta}\Bigr]\sum_{j<K}c_j\bigl(\E f(x_j)-\fs\bigr)+2K\gamma^2\sigma^2 .
 \]
-The step-size condition makes the bracket at least $\frac12$, and \eqref{eq:lf-convex}
-follows.
+The step-size condition makes the bracket at least $\frac12$, and (a) follows.
 
-\emph{Step 5: the averaged iterate.} By convexity,
+\emph{Step 5: the averaged iterate, (b).} By convexity,
 $f(x_j)\ge f(\hat x_K)+\ip{\nabla f(\hat x_K)}{x_j-\hat x_K}$ for each $j$. Multiplying by
 $c_j/C_K$ and summing, the inner products cancel, so
-$f(\hat x_K)\le\frac1{C_K}\sum_jc_jf(x_j)$. Combine this with \eqref{eq:lf-convex} (drop
+$f(\hat x_K)\le\frac1{C_K}\sum_jc_jf(x_j)$. Combine this with (a) (drop
 $\E\norm{x_K-x^\star}^2\ge0$ and divide by $\gamma C_K$). Next,
 $C_K=K-\sum_{j<K}\beta^{K-j}=K-\frac{\beta(1-\beta^K)}{1-\beta}\ge K-\frac{\beta}{1-\beta}$, which
-is at least $\frac K2$ when $K\ge\frac{2\beta}{1-\beta}$. Finally, without noise
-\eqref{eq:lf-convex} is a pathwise inequality whose first term is non-negative, so
-$\norm{x_K-x^\star}^2\le\norm{x_0-x^\star}^2$.
+is at least $\frac K2$ when $K\ge\frac{2\beta}{1-\beta}$.
+
+\emph{Step 6: (c) and (d).} For (c), as in \cref{cor:rate}:
+$\frac{2D^2}{\gamma K}\le\frac{2D^2}{K}\bigl(\frac{4(1+\beta)L}{1-\beta}+\frac{\sigma\sqrt K}{D}\bigr)$ and
+$4\gamma\sigma^2\le\frac{4\sigma D}{\sqrt K}$; add. For (d), without noise (a) is an inequality
+along the (deterministic) trajectory whose first term is non-negative.
 \end{proof}
 
-Compared with \cref{thm:convex}, the bound has the same form,
+Compared with \cref{thm:convex}, the bound (b) has the same form,
 $\frac{\norm{x_0-x^\star}^2}{\gamma K}+\gamma\sigma^2$ up to constant factors, without the term
-$\frac{2\beta\Dlt}{(1-\beta)K}$. Two things are different. First, the guarantee is for the
+$\frac{2\beta\Dlt}{(1-\beta)K}$; with tuned steps the dominant term is $\frac{6\sigma D}{\sqrt K}$
+instead of $\frac{2\sigma D}{\sqrt K}$. Two things are different. First, the guarantee is for the
 average $\hat x_K$, which gives less weight to the last $\approx\frac1{1-\beta}$ iterates
 (their gradients are still partly stored in the moving average). Second, the step-size
 condition $L\gamma\le\frac{1-\beta}{4(1+\beta)}$ depends on $\beta$, whereas \cref{thm:convex}
@@ -487,14 +511,14 @@ direction is a good estimate of the gradient only if the iterates move slowly co
 the memory $\frac1{1-\beta}$ of the average. Convexity does not remove this requirement in
 the Lyapunov-free argument.
 
-\subsection{Noise that grows with the gradient}
+\subsection{Noise that grows with the gradient}\label{sec:lf-growing}
 
 \begin{proposition}[Growing noise]\label{prop:lf-growing}
 Let \cref{as:smooth,as:lower,as:unbiased} hold, and replace \cref{as:variance} by
 $\Ek\norm{g_k-\nabla f(x_k)}^2\le\sigma^2+M\norm{\nabla f(x_k)}^2$ for some $M\ge0$. Let
 $\beta\in[0,1)$ and let the step be constant with
 \[
-  L\gamma\le\min\Bigl\{\frac{1-\beta}{4},\;\frac1{4M}\Bigr\} .
+  L\gamma\le\frac{1-\beta}{4}\qquad\text{and}\qquad LM\gamma\le\frac14 .
 \]
 Then for every $K\ge1$,
 $\displaystyle\frac1K\sum_{k=0}^{K-1}\E\norm{\nabla f(x_k)}^2\le\frac{(4+\beta)\Dlt}{\gamma K}+4L\gamma\sigma^2
@@ -503,7 +527,10 @@ $\displaystyle\frac1K\sum_{k=0}^{K-1}\E\norm{\nabla f(x_k)}^2\le\frac{(4+\beta)\
 
 \begin{proof}
 Follow the proof of \cref{thm:lf}. \Cref{as:variance} enters it only through the bound on
-$S_n=\sum_{k<K}\E\norm{n_k}^2$. The cross terms in $\E\norm{n_k}^2$ still vanish (they only use
+$S_n=\sum_{k<K}\E\norm{n_k}^2$ in \cref{lem:bias-variance}(b), and through integrability:
+\cref{lem:noise-correlation} uses only $\Ek[\eps_k]=0$, and all expectations remain finite by
+the induction of \cref{rem:integrability}, now with
+$\E\norm{g_k}^2\le(1+M)\E\norm{\nabla f(x_k)}^2+\sigma^2$. The cross terms in $\E\norm{n_k}^2$ still vanish (they only use
 $\Ek[\eps_k]=0$), so
 $\E\norm{n_k}^2=(1-\beta)^2\sum_{j\le k}\beta^{2(k-j)}\E\norm{\eps_j}^2\le(1-\beta)^2\sum_{j\le k}\beta^{2(k-j)}\bigl(\sigma^2+M\E\norm{\nabla f(x_j)}^2\bigr)$.
 Summing over $k<K$, exchanging the sums and using
@@ -517,15 +544,19 @@ and the estimate there shows $\beta^2u+\frac32\beta+1-\beta\le1+\beta$. So the c
 most $L\gamma^2\frac{1+\beta}{1-\beta}$, the $S_n$-term is at most $KL\gamma^2\sigma^2+ML\gamma^2S_g$, and
 instead of Step~6 we get
 $\frac\gamma2(1-2ML\gamma)S_g\le\Dlt+\frac{\gamma\beta}{2(1-\beta)}\norm{\nabla f(x_0)}^2+KL\gamma^2\sigma^2$.
-Now $2ML\gamma\le\frac12$, and the middle term is at most $\frac\beta4\Dlt$ as in Step~6. So
+Now $2LM\gamma\le\frac12$, and the middle term is at most $\frac\beta4\Dlt$ as in Step~6. So
 $\frac\gamma4S_g\le\bigl(1+\frac\beta4\bigr)\Dlt+KL\gamma^2\sigma^2$; divide by $\frac{\gamma K}{4}$.
 \end{proof}
 
-The extra condition $L\gamma\le\frac1{4M}$ is the analog of the condition
-$L\alpha(1+M)\lesssim1$ that SGD needs under the same noise model, and of
-\cref{rem:extensions}(ii) for the potential. The same substitution can be made in
-\cref{lem:weighted-budget}, at the price of a further restriction on $ML\gamma_0$; we do
-not pursue this.
+The extra condition $LM\gamma\le\frac14$ is the analog of the condition
+$L\alpha(1+M)\lesssim1$ that SGD needs under the same noise model. For the potential,
+\cref{rem:extensions}(ii) states the coupled condition $L\gamma(1+M)\le\frac{1-\beta}{2}$, but its
+computation also gives a decoupled one. The gradient coefficient there equals
+$\frac\gamma2\bigl[1-\frac{L\gamma(1-\beta+\beta^2)}{1-\beta}-LM\gamma(1+\beta^2)\bigr]$, which is at least
+$\frac\gamma4$ when $L\gamma\le\frac{1-\beta}{4}$ and $LM\gamma(1+\beta^2)\le\frac14$; then
+\cref{thm:nonconvex} gives $\frac{4\Dlt}{\gamma K}+4L\gamma\sigma^2$. So both proofs need the same kind of
+condition. The same substitution can be made in \cref{lem:weighted-budget}, at the price of a
+further restriction on $LM\gamma_0$; we do not pursue this.
 
 \subsection{What the method covers, and what it does not}\label{sec:lf-limits}
 
@@ -554,23 +585,25 @@ Exact gradients &
 Decreasing steps &
   heavy-ball form, $L\gamma_k\le\frac{1-\beta}2$: $\sum_k\gamma_k\E\norm{\nabla f(x_k)}^2\le4\Dlt+4L\sigma^2\sum_k\gamma_k^2$
   (\cref{thm:diminishing}) &
-  momentum-buffer form, non-increasing $\gamma_k$, $L\gamma_0\le\frac{1-\beta}4$:
+  momentum-buffer form, $\gamma_k$ non-increasing and fixed in advance, $L\gamma_0\le\frac{1-\beta}4$:
   $\frac52\Dlt+2L\sigma^2\sum_k\gamma_k^2$ (\cref{thm:lf-diminishing})\\
 PL &
   $L\gamma\le\frac{1-\beta}2$: $2(1-\frac{\gamma\mu}4)^k\Dlt+\frac{8L\gamma\sigma^2}{\mu}$ (\cref{thm:pl}) &
   $L\gamma\le\frac{1-\beta}4$: $\frac{19}{15}(1-\frac{\gamma\mu}4)^k\Dlt+\frac{4L\gamma\sigma^2}{\mu}$; if $\mu\le\frac L4$:
   $\frac{19}{15}(1-\gamma\mu)^k\Dlt+\frac{L\gamma\sigma^2}{\mu}$ (\cref{thm:lf-pl})\\
 PL, decaying &
-  $a\ge\frac{16L}{\mu(1-\beta)}$: $O\bigl(\frac{a\Dlt}{k}+\frac{L\sigma^2}{\mu^2k}\bigr)$ (\cref{cor:pl-decay}) &
-  $a\ge\frac{32L}{\mu(1-\beta)}$: $O\bigl(\frac{a^2\Dlt}{k^2}+\frac{L\sigma^2}{\mu^2k}\bigr)$ (\cref{cor:lf-pl-decay})\\
+  heavy-ball form, $a\ge\frac{16L}{\mu(1-\beta)}$: $O\bigl(\frac{a\Dlt}{k}+\frac{L\sigma^2}{\mu^2k}\bigr)$ (\cref{cor:pl-decay}) &
+  momentum-buffer form, $a\ge\frac{32L}{\mu(1-\beta)}$: $O\bigl(\frac{a^2\Dlt}{k^2}+\frac{L\sigma^2}{\mu^2k}\bigr)$
+  (\cref{cor:lf-pl-decay})\\
 Convex &
   $L\gamma\le\frac12$: $\frac{\norm{x_0-x^\star}^2}{\gamma K}+\frac{2\beta\Dlt}{(1-\beta)K}+\gamma\sigma^2$ at $\bar x_K$
   (\cref{thm:convex}) &
   $L\gamma\le\frac{1-\beta}{4(1+\beta)}$: $\frac{2\norm{x_0-x^\star}^2}{\gamma K}+4\gamma\sigma^2$ at $\hat x_K$
   (\cref{thm:lf-convex})\\
 Growing noise &
-  $L\gamma(1+M)\le\frac{1-\beta}2$: the key inequality holds (\cref{rem:extensions}) &
-  $L\gamma\le\min\{\frac{1-\beta}4,\frac1{4M}\}$: $\frac{5\Dlt}{\gamma K}+4L\gamma\sigma^2$ (\cref{prop:lf-growing})\\
+  $L\gamma\le\frac{1-\beta}4$, $LM\gamma(1+\beta^2)\le\frac14$: $\frac{4\Dlt}{\gamma K}+4L\gamma\sigma^2$
+  (\cref{rem:extensions}, \cref{sec:lf-growing}) &
+  $L\gamma\le\frac{1-\beta}4$, $LM\gamma\le\frac14$: $\frac{5\Dlt}{\gamma K}+4L\gamma\sigma^2$ (\cref{prop:lf-growing})\\
 \bottomrule
 \end{tabularx}
 \caption{The two proofs side by side. Nonconvex and growing-noise rows: bounds on
@@ -581,7 +614,7 @@ $\gamma=\alpha/(1-\beta)$.}
 \label{tab:lf-vs-lyap}
 \end{table}
 
-The method has two limits.
+The method has three limits.
 \begin{itemize}
 \item \emph{Large steps.} The estimate is good only if the iterates move slowly compared
   with the memory of the average, which is the condition $L\gamma\lesssim1-\beta$. So the
@@ -591,6 +624,11 @@ The method has two limits.
   $L\gamma\le\frac12$ of the convex \cref{thm:convex}. In these regimes the momentum
   direction can point far away from the gradient, and an energy (Lyapunov) argument is
   what shows that the method still converges.
+\item \emph{Step-size schedules.} Varying steps are covered only for the averaging
+  (momentum-buffer) form, and only for schedules that are fixed in advance and
+  non-increasing (\cref{rem:which-algorithm}); warm-up phases and data-dependent schedules are
+  not covered. \Cref{thm:diminishing} covers the heavy-ball form with any steps
+  $L\gamma_k\le\frac{1-\beta}{2}$, monotone or not.
 \item \emph{Varying momentum.} We kept $\beta$ fixed. Schedules that change $\beta$ during the
   run, such as the multistage method of~\cite{liu2020}, are not covered by the statements
   above. (The decomposition of \cref{lem:bias-variance} extends to a varying $\beta_k$, but
