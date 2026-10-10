@@ -5,15 +5,18 @@
 The proofs of \cref{sec:master,sec:convergence}, like those of Liu, Gao and
 Yin~\cite{liu2020}, measure progress with a potential that combines the function value at
 the extrapolated point $z_k$ with terms in the past displacements. This section gives a
-different proof of the main nonconvex result that never leaves the function value
-$f(x_k)$. There is no auxiliary sequence and no potential. At every step we use exactly the
-expected decrease inequality of SGD, applied to $f(x_k)$, with the momentum direction viewed
-as an \emph{inexact gradient}: an exponentially weighted average of past stochastic
-gradients, which has a smaller variance than one stochastic gradient but a bias because it
-lags behind the moving gradient. The price is a slightly stronger restriction on the
+different proof of the main nonconvex rate, under a slightly stricter step-size condition,
+that never leaves the function value $f(x_k)$. There is no auxiliary point sequence such as
+$z_k$ and no potential. At every step we use only the descent lemma for $f$ between $x_k$
+and $x_{k+1}$, with the momentum direction viewed as an \emph{inexact gradient}: an
+exponentially weighted average of past stochastic gradients, which has a smaller variance
+than one stochastic gradient but a bias because it lags behind the moving gradient. The
+resulting one-step inequality does not guarantee a decrease at every step; the errors are
+controlled only on average over time. The price is a slightly stronger restriction on the
 momentum, $L\gamma\le\frac{1-\beta}{4}$, that is, $\beta\le1-4L\gamma$ (compare
 $\beta\le1-2L\gamma$ in \cref{thm:master}). This estimator viewpoint is used, for instance,
-in the analysis of normalized SGD with momentum~\cite{cutkosky2020}.
+in the analysis of normalized SGD with momentum~\cite{cutkosky2020}, and Liu, Gao and
+Yin~\cite{liu2020} start from it as well (their Lemmas~1--2) before building their potential.
 
 Throughout this section we run Algorithm~1 in the averaging form of
 \cref{prop:forms}(iii),
@@ -35,7 +38,8 @@ $\delta_k:=\nabla f(x_{k-1})-\nabla f(x_k)$ (so $\delta_0=0$), and define recurs
 \]
 Then for all $k\ge0$:
 \begin{enumerate}[label=\textup{(\alph*)}]
-\item $e_k=b_k+n_k$ (\emph{bias} plus \emph{averaged noise});
+\item $e_k=\beta e_{k-1}+\beta\delta_k+(1-\beta)\eps_k$ with $e_{-1}:=-\nabla f(x_0)$, and
+      $e_k=b_k+n_k$ (\emph{bias} plus \emph{averaged noise});
 \item $b_k$ is known at time $k$; $n_k=(1-\beta)\sum_{j=0}^k\beta^{k-j}\eps_j$ and
       $\E\norm{n_k}^2\le\frac{1-\beta}{1+\beta}\,\sigma^2$;
 \item $\norm{\delta_k}\le L\gamma\norm{\bar m_{k-1}}$ for $k\ge1$;
@@ -77,11 +81,13 @@ Summing over $k<K$ and bounding each geometric series by its infinite sum
 \end{proof}
 
 The two parts of the error behave very differently. The bias $b_k$ is the lag of the
-moving average behind a moving target: it is a weighted sum of recent gradient changes,
-and it is small when the iterates move slowly compared with the memory $1/(1-\beta)$ of the
-average. The averaged noise $n_k$ has variance reduced by the factor
-$\frac{1-\beta}{1+\beta}$, but, unlike the noise of SGD, it is \emph{not} independent of the
-past.
+moving average behind a moving target: apart from the decaying initialization term
+$-\beta^{k+1}\nabla f(x_0)$, it is a weighted sum of recent gradient changes, and it is small
+when the iterates move slowly compared with the memory $1/(1-\beta)$ of the average.
+(Strictly speaking, the conditional mean of $e_k$ given the past is $b_k+\beta n_{k-1}$; we call
+$b_k$ the bias because it is the part of the error that contains no noise.) The averaged
+noise $n_k$ has variance reduced by the factor $\frac{1-\beta}{1+\beta}$, but, unlike the fresh
+noise $\eps_k$ of SGD, it does not have conditional mean zero: $\Ek[n_k]=\beta n_{k-1}$.
 
 \begin{lemma}[One step, measured by $f$]\label{lem:inexact-step}
 Under \cref{as:smooth}, for every $k\ge0$ and along every trajectory,
@@ -98,9 +104,10 @@ By polarization (\cref{lem:elementary}(c)),
 $-\ip{\nabla f(x_k)}{\bar m_k}=\frac12\norm{e_k}^2-\frac12\norm{\nabla f(x_k)}^2-\frac12\norm{\bar m_k}^2$.
 \end{proof}
 
-Inequality \eqref{eq:inexact-step} is the SGD-type decrease of the function value itself:
-$f$ goes down by $\frac\gamma2\norm{\nabla f(x_k)}^2$ unless the momentum direction is a
-poor estimate of the gradient. It remains to show that the errors $e_k$ are small \emph{on
+Inequality \eqref{eq:inexact-step} is the descent inequality of gradient descent with an
+inexact gradient, applied to the function value itself: $f$ goes down by
+$\frac\gamma2\norm{\nabla f(x_k)}^2$ unless the momentum direction is a poor estimate of the
+gradient. It remains to show that the errors $e_k$ are small \emph{on
 average over time}; no single step needs to make progress.
 
 \subsection{A first version: treat the error as a whole}
@@ -158,13 +165,13 @@ version removes this restriction.
 
 \subsection{The second version: the averaged noise is almost orthogonal to the gradient}
 
-The key observation is that each noise vector $\eps_j$ is independent of the gradient at
-the moment it is drawn. A later gradient $\nabla f(x_k)$ is correlated with $\eps_j$ only
+The key observation is that each noise vector $\eps_j$ has conditional mean zero given the
+past, so it is uncorrelated with the gradient $\nabla f(x_j)$ at the moment it is drawn. A later gradient $\nabla f(x_k)$ is correlated with $\eps_j$ only
 because $\eps_j$ has moved the iterate, and that movement is of order $\gamma$. So the
 correlation between the averaged noise and the current gradient is of second order.
 
 \begin{lemma}[Noise--gradient correlation]\label{lem:noise-correlation}
-Under \cref{as:unbiased}, for every $k\ge0$,
+Under \cref{as:smooth,as:unbiased,as:variance}, for every $k\ge0$,
 \[
   \E\ip{\nabla f(x_k)}{n_k}=-\sum_{i=1}^{k}\beta^{k-i+1}\,\E\ip{\delta_i}{n_{i-1}},
 \]
@@ -196,7 +203,7 @@ Let \cref{as:smooth,as:lower,as:unbiased,as:variance} hold, $\beta\in[0,1)$, and
 \]
 Then for every $K\ge1$,
 \[
-  \frac1K\sum_{k=0}^{K-1}\E\norm{\nabla f(x_k)}^2\le\frac{5\Dlt}{2\gamma K}+4L\gamma\sigma^2 .
+  \frac1K\sum_{k=0}^{K-1}\E\norm{\nabla f(x_k)}^2\le\frac{5\Dlt}{2\gamma K}+2L\gamma\sigma^2 .
 \]
 \end{theorem}
 \end{tcolorbox}
@@ -228,7 +235,8 @@ $\norm{\delta_k}^2\le L^2\gamma^2\norm{p_{k-1}+n_{k-1}}^2\le2L^2\gamma^2(\norm{p
 \cref{lem:bias-variance}(d) gives
 $S_b\le\frac{\beta}{1-\beta}\norm{\nabla f(x_0)}^2+\frac{2\beta^2L^2\gamma^2}{(1-\beta)^2}(S_p+S_n)$.
 
-\emph{Step 4: the noise.} By \cref{lem:bias-variance}(c) and Young's inequality,
+\emph{Step 4: the noise.} By \cref{lem:bias-variance}(c), the triangle inequality
+$\norm{\bar m_{i-1}}\le\norm{p_{i-1}}+\norm{n_{i-1}}$ and Young's inequality,
 \[
   \norm{\delta_i}\norm{n_{i-1}}\le L\gamma(\norm{p_{i-1}}+\norm{n_{i-1}})\norm{n_{i-1}}
   \le L\gamma\bigl(\tfrac12\norm{p_{i-1}}^2+\tfrac32\norm{n_{i-1}}^2\bigr),
@@ -246,13 +254,15 @@ $-\gamma\sum_{k<K}\E\ip{\nabla f(x_k)}{n_k}\le\frac{L\gamma^2\beta}{1-\beta}\big
 Since $L\gamma\le\frac14$ and $u\le\frac14$, the coefficient of $S_p$ satisfies
 $1-2L\gamma-2\beta^2u^2-\beta u\ge1-\frac12-\frac18-\frac14>0$, so this term can be dropped.
 For the last term, $\gamma u(1-\beta)=L\gamma^2$, hence with $S_n\le K\frac{1-\beta}{1+\beta}\sigma^2$,
-\[
+\begin{align*}
   \gamma\Bigl[\beta^2u^2+\tfrac32\beta u+L\gamma\Bigr]S_n
-  \le KL\gamma^2\sigma^2\Bigl[\frac{\beta^2u}{1+\beta}+\frac{3\beta}{2(1+\beta)}+\frac{1-\beta}{1+\beta}\Bigr]
-  \le KL\gamma^2\sigma^2\Bigl[\frac18+\frac34+1\Bigr]\le2KL\gamma^2\sigma^2 .
-\]
+  &\le KL\gamma^2\sigma^2\Bigl[\frac{\beta^2u}{1+\beta}+\frac{3\beta}{2(1+\beta)}+\frac{1-\beta}{1+\beta}\Bigr]\\
+  &=KL\gamma^2\sigma^2\Bigl[\frac{\beta^2u}{1+\beta}+\frac{2+\beta}{2(1+\beta)}\Bigr]\le KL\gamma^2\sigma^2 ,
+\end{align*}
+because, with $u\le\frac14$, the last bracket is at most
+$\frac{\beta^2+2\beta+4}{4(1+\beta)}\le1$ (equivalent to $\beta^2\le2\beta$).
 \emph{Step 6: conclude.} Dividing by $\gamma K/2$,
-$\frac{S_g}{K}\le\frac{2\Dlt}{\gamma K}+\frac{\beta\norm{\nabla f(x_0)}^2}{(1-\beta)K}+4L\gamma\sigma^2$.
+$\frac{S_g}{K}\le\frac{2\Dlt}{\gamma K}+\frac{\beta\norm{\nabla f(x_0)}^2}{(1-\beta)K}+2L\gamma\sigma^2$.
 Finally $\norm{\nabla f(x_0)}^2\le2L\Dlt$ (\cref{lem:grad-gap}) and $\frac{L}{1-\beta}=\frac u\gamma\le\frac1{4\gamma}$,
 so the middle term is at most $\frac{\beta\Dlt}{2\gamma K}\le\frac{\Dlt}{2\gamma K}$.
 \end{proof}
@@ -265,26 +275,28 @@ Under the assumptions of \cref{thm:lf} with $\Dlt>0$, choose
 \]
 Then
 \[
-  \frac1K\sum_{k=0}^{K-1}\E\norm{\nabla f(x_k)}^2\le\frac{10L\Dlt}{(1-\beta)K}+\frac{13}{2}\,\sigma\sqrt{\frac{L\Dlt}{K}} .
+  \frac1K\sum_{k=0}^{K-1}\E\norm{\nabla f(x_k)}^2\le\frac{10L\Dlt}{(1-\beta)K}+\frac{9}{2}\,\sigma\sqrt{\frac{L\Dlt}{K}} .
 \]
 \end{corollary}
 
 \begin{proof}
 As in \cref{cor:rate}:
 $\frac{5\Dlt}{2\gamma K}\le\frac{5\Dlt}{2K}\bigl(\frac{4L}{1-\beta}+\sigma\sqrt{\frac{LK}{\Dlt}}\bigr)$
-and $4L\gamma\sigma^2\le4\sigma\sqrt{\frac{L\Dlt}{K}}$.
+and $2L\gamma\sigma^2\le2\sigma\sqrt{\frac{L\Dlt}{K}}$.
 \end{proof}
 
 \subsection{Comparison with the Lyapunov proof}
 
-\Cref{thm:lf} recovers \cref{thm:nonconvex} (which gives $\frac{4\Dlt}{\gamma K}+4L\gamma\sigma^2$
-under $L\gamma\le\frac{1-\beta}{2}$) with a step-size condition that is stricter by a factor of
-$2$. What differs is the route.
+\Cref{thm:lf} reproduces the bound of \cref{thm:nonconvex} (which gives
+$\frac{4\Dlt}{\gamma K}+4L\gamma\sigma^2$ under $L\gamma\le\frac{1-\beta}{2}$), with smaller constants but under
+a step-size condition that is stricter by a factor of $2$; it says nothing for
+$\frac{1-\beta}{4}<L\gamma\le\frac{1-\beta}{2}$. What differs is the route.
 \begin{itemize}
 \item \emph{What is tracked.} The Lyapunov proofs track a potential (here
-  $f(z_k)+\cb\norm{x_k-x_{k-1}}^2$; in~\cite{liu2020} $f(z_k)$ plus an infinite weighted sum of
-  past squared steps). The proof above tracks only $f(x_k)$, through the SGD inequality
-  \eqref{eq:inexact-step}.
+  $f(z_k)+\cb\norm{x_k-x_{k-1}}^2$; in~\cite{liu2020} $f(z_k)$ plus a weighted sum of all
+  past squared steps). The proof above tracks only $f(x_k)$, through the one-step
+  inequalities \eqref{eq:inexact-step} (first version) and \eqref{eq:lf-step} (second
+  version), both obtained from the descent lemma with an inexact gradient.
 \item \emph{How momentum enters.} Momentum appears only through two explicit quantities of
   the estimator $\bar m_k$: its bias $b_k$, which is small because the iterates move slowly
   compared with the memory of the average ($L\gamma\le\frac{1-\beta}{4}$), and its averaged noise
@@ -293,9 +305,13 @@ $2$. What differs is the route.
 \item \emph{The role of $\beta$.} The two quantities show the trade-off directly. A larger
   $\beta$ averages the noise over a longer window but makes the average lag further behind
   the gradient; the condition $L\gamma\le\frac{1-\beta}{4}$ is what keeps the lag under control.
-  At the end the two effects cancel: the noise term $4L\gamma\sigma^2$ depends on $\gamma$ only,
+  At the end the two effects cancel: the noise term $2L\gamma\sigma^2$ depends on $\gamma$ only,
   as in \cref{prop:noise-floor}.
 \end{itemize}
 The restriction on the momentum, $\beta\le1-4L\gamma$, is the same kind of restriction as in
 \cref{thm:master} and in~\cite{liu2020}: for a given $\beta$ the effective step must be of
-order $(1-\beta)/L$.
+order $(1-\beta)/L$. In the present notation (their step size is our $\gamma$), Theorem~1
+of~\cite{liu2020} requires
+$L\gamma\le\min\bigl\{\frac{1-\beta}{4-\beta+\beta^2},\frac{1-\beta}{2\sqrt2\sqrt{\beta+\beta^2}}\bigr\}$, which is at
+least $\frac{1-\beta}{4}$ and close to it; so the condition of \cref{thm:lf} is slightly stricter
+than theirs, by less than a factor $\frac43$.
