@@ -96,9 +96,11 @@ compute the noise floor exactly on quadratics, derive the exact stability region
 heavy-ball method on quadratics, prove that without noise a mechanical energy decreases for
 every smooth function when $\alpha<2(1-\beta)/L$, and verify by hand a classical
 counterexample in which momentum parameters tuned for quadratics make the method cycle on a
-strongly convex function. Finally, we give a second proof of the nonconvex rate that uses no
-Lyapunov function at all: it analyzes $f(x_k)$ directly, treating the momentum as a biased,
-low-variance estimate of the gradient. Numerical experiments illustrate each statement. Only
+strongly convex function. Finally, we give a second proof that uses no Lyapunov function at all: it analyzes
+$f(x_k)$ directly, treating the momentum as a biased, low-variance estimate of the gradient.
+It gives analogues of (i)--(iv), with (ii) for learning-rate schedules in the
+momentum-buffer form used in practice, under somewhat stricter step-size conditions that keep
+the iterates slow compared with the memory of the momentum. Numerical experiments illustrate each statement. Only
 multivariable calculus, linear algebra and basic probability are assumed.
 \end{abstract}
 
@@ -114,6 +116,7 @@ multivariable calculus, linear algebra and basic probability are assumed.
 \input{sections/06_convergence}
 \input{sections/07_circumstances}
 \input{sections/07b_lyapunov_free}
+\input{sections/07c_lyapunov_free_all}
 \input{sections/08_experiments}
 \input{sections/09_conclusion}
 

@@ -119,6 +119,9 @@ Nonconvex, no potential & $\alpha\le\frac{(1-\beta)^2}{4L}$ &
 Nonconvex, decaying & $\gamma_k\le\frac{1-\beta}{2L}$, $\sum\gamma_k=\infty$, $\sum\gamma_k^2<\infty$ &
   $\liminf_k\norm{\nabla f(x_k)}=0$ almost surely &
   \cref{thm:diminishing}\\
+Decaying, buffer form & $\gamma_k\downarrow$, $\gamma_0\le\frac{1-\beta}{4L}$, same sums &
+  the same, for learning-rate schedules as used in practice &
+  \cref{thm:lf-diminishing}\\
 No noise ($\sigma=0$) & $\alpha=\frac{(1-\beta)^2}{2L}$ &
   $\Phi_k$ non-increasing; $\min_{k<K}\norm{\nabla f(x_k)}^2\le\frac{8L\Dlt}{(1-\beta)K}$ &
   \cref{cor:deterministic}\\
@@ -143,7 +146,10 @@ up to constants). The question ``under what circumstances?'' is discussed in
 unavoidable with a constant step (\cref{prop:noise-floor}), that too large a step size
 makes the method diverge or cycle (\cref{prop:quadratic-stability},
 \cref{ex:lrp}), and how the admissible step sizes shrink as $\beta\to1$
-(\cref{fig:regions}).}
+(\cref{fig:regions}). \Cref{sec:lyapunov-free,sec:lf-all} prove analogues of these results without a
+potential, under stricter step-size conditions (for decaying steps, in the momentum-buffer
+form); only the large-step result of \cref{prop:energy} has no such analogue.
+\Cref{tab:lf-vs-lyap} compares the two proofs.}
 \label{tab:summary}
 \end{table}
 
@@ -163,7 +169,7 @@ of the report, proves the expected decrease inequality \eqref{eq:intro-master}.
 answers the question ``under what circumstances does SGDM converge?'', including exact
 computations that show which parts of the conditions cannot be removed.
 \Cref{sec:lyapunov-free} gives a second proof of the nonconvex rate without any Lyapunov
-function. \Cref{sec:experiments} illustrates everything numerically; the code that produces every
+function, and \cref{sec:lf-all} extends it to all the other settings. \Cref{sec:experiments} illustrates everything numerically; the code that produces every
 figure is in the \texttt{experiments/} folder of the repository.
 
 \paragraph{Relation to the literature.} The extrapolated-point (``virtual sequence'')
@@ -172,5 +178,5 @@ methods~\cite{ghadimi2015,yang2016,yu2019,liu2020,sebbouh2021}. The aim here is 
 self-contained, fully explicit version---one potential, one key inequality, and explicit
 constants---written so that each line can be checked by hand. Constants are chosen for
 readability, not optimized. For readers who prefer to avoid potentials altogether,
-\cref{sec:lyapunov-free} proves the main nonconvex rate by analyzing the function value
+\cref{sec:lyapunov-free,sec:lf-all} prove the main results by analyzing the function value
 $f(x_k)$ directly.
